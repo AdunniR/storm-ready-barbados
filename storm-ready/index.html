@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StormReady Barbados – Department of Emergency Management</title>
+  <link rel="stylesheet" href="../dist/styles.css">
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+    main { flex: 1; }
+
+    /* DEM status banner */
+    #dem-banner { border-bottom: 4px solid; transition: background 0.2s, border-color 0.2s, color 0.2s; }
+    #dem-banner[data-status="normal"]   { background: var(--color-teal-10);  border-color: var(--color-teal-40);  color: var(--color-teal-00); }
+    #dem-banner[data-status="advisory"] { background: var(--color-blue-10);  border-color: var(--color-blue-40);  color: var(--color-blue-100); }
+    #dem-banner[data-status="watch"]    { background: #ffe9a8; border-color: var(--color-yellow-00); color: #6b4a00; }
+    #dem-banner[data-status="warning"]  { background: #ffc4c4; border-color: var(--color-red-00);   color: var(--color-red-00); }
+    #dem-banner[data-status="open"]     { background: var(--color-green-10); border-color: var(--color-green-100); color: var(--color-green-00); }
+
+    /* Service cards */
+    .service-card {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-xs);
+      padding: var(--spacing-xm);
+      border: 2px solid var(--color-grey-00);
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .service-card:hover {
+      border-color: var(--color-teal-00);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-decoration: none;
+    }
+    .service-card__heading {
+      font-size: var(--font-size-h3);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-teal-00);
+      line-height: var(--line-height-h3);
+    }
+    .service-card__desc {
+      font-size: var(--font-size-body);
+      color: var(--color-mid-grey-00);
+      line-height: var(--line-height-body);
+    }
+    .service-card__arrow {
+      font-size: var(--font-size-body);
+      color: var(--color-teal-00);
+      font-weight: var(--font-weight-bold);
+      margin-top: auto;
+      padding-top: var(--spacing-xs);
+    }
+
+    /* Contact cards */
+    .contact-card {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: var(--spacing-s);
+      border: 2px solid var(--color-grey-00);
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.15s;
+    }
+    .contact-card:hover { border-color: var(--color-teal-00); }
+
+    /* Layout helpers */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-s); }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--spacing-s); }
+    @media (max-width: 640px) {
+      .grid-2, .grid-4 { grid-template-columns: 1fr; }
+    }
+    @media (min-width: 641px) and (max-width: 900px) {
+      .grid-4 { grid-template-columns: 1fr 1fr; }
+    }
+
+    .page-content { max-width: 900px; margin: 0 auto; padding: var(--spacing-l) var(--spacing-s); }
+    .section { margin-top: var(--spacing-l); padding-top: var(--spacing-l); border-top: 2px solid var(--color-grey-00); }
+    .section:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+
+    /* Demo controls */
+    #demo-controls {
+      position: fixed; top: 1rem; right: 1rem; z-index: 9999; max-width: 220px;
+    }
+    #demo-controls details {
+      background: #fff; border: 2px dashed var(--color-blue-40);
+      border-radius: 6px; box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    }
+    #demo-controls summary {
+      padding: 0.5rem 0.75rem; font-size: 0.8rem; font-weight: 700;
+      color: var(--color-mid-grey-00); cursor: pointer; list-style: none;
+      display: flex; align-items: center; gap: 6px;
+    }
+    #demo-controls .demo-btns { padding: 0.5rem 0.75rem; border-top: 1px solid var(--color-grey-00); display: flex; flex-direction: column; gap: 6px; }
+    #demo-controls .demo-btns p { font-size: 0.7rem; color: var(--color-mid-grey-00); margin: 0 0 4px; }
+    #demo-controls .demo-btns button { padding: 4px 8px; font-size: 0.78rem; border-radius: 4px; cursor: pointer; text-align: left; font-family: inherit; }
+
+    @media print { #demo-controls { display: none; } }
+  </style>
+</head>
+<body>
+
+<!-- Official banner -->
+<div class="govbb-official-banner">
+  <div class="govbb-container govbb-official-banner__inner">
+    <div class="govbb-official-banner__crest">
+      <img class="govbb-official-banner__icon" src="../dist/assets/images/govbb-creast.svg" alt="" />
+    </div>
+    <div class="govbb-official-banner__text">
+      <span>Official government website</span>
+    </div>
+  </div>
+</div>
+
+<!-- Header -->
+<header class="govbb-header">
+  <div class="govbb-container govbb-header__inner">
+    <a href="/" aria-label="Go to alpha.gov.bb homepage">
+      <img class="govbb-header__logo" src="../dist/assets/images/govbb-logo.svg" alt="Government of Barbados" />
+    </a>
+  </div>
+</header>
+
+<main>
+
+  <!-- Alpha banner -->
+  <div class="govbb-status-banner govbb-status-banner--alpha" role="status">
+    <div class="govbb-container">
+      <p>This page is in <a class="govbb-link" href="#">Alpha</a>. Your feedback helps us improve.</p>
+    </div>
+  </div>
+
+  <!-- DEM Status Banner -->
+  <div id="dem-banner" data-status="normal" role="status" aria-live="polite">
+    <div class="govbb-container" style="padding-block: var(--spacing-s);">
+      <div style="display:flex; flex-wrap:wrap; gap: var(--spacing-xs); align-items: flex-start; justify-content: space-between;">
+        <div>
+          <p style="font-weight: 700; font-size: var(--font-size-body); line-height: 1.3; margin: 0;" id="banner-label">No active storm</p>
+          <p style="font-size: var(--font-size-caption); line-height: 1.5; margin: 4px 0 0;" id="banner-message">There is no hurricane watch or warning in effect for Barbados. Use this time to get prepared.</p>
+        </div>
+        <p style="font-size: 0.875rem; opacity: 0.75; margin: 0; white-space: nowrap;" id="banner-updated">Last updated: 19 May 2026, 9.00am</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="govbb-container">
+    <div class="page-content" style="padding-left:0; padding-right:0;">
+
+      <!-- Page header -->
+      <div class="section">
+        <h1 style="font-size: var(--font-size-h1); font-weight: var(--font-weight-bold); line-height: var(--line-height-h1); margin-bottom: var(--spacing-s);">
+          StormReady Barbados
+        </h1>
+        <p style="font-size: var(--font-size-body); color: var(--color-mid-grey-00); max-width: 600px; line-height: var(--line-height-body); margin: 0;">
+          Find your nearest emergency shelter, get ready for hurricane season, and stay up to date with DEM storm alerts.
+        </p>
+      </div>
+
+      <!-- Service cards -->
+      <div class="section">
+        <h2 style="font-size: var(--font-size-h2); font-weight: var(--font-weight-bold); line-height: var(--line-height-h2); margin-bottom: var(--spacing-s);">Services</h2>
+        <div class="grid-2">
+          <a href="shelters/" class="service-card">
+            <div style="width:40px;height:40px;background:var(--color-teal-10);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-teal-00)" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </div>
+            <p class="service-card__heading">Find a shelter</p>
+            <p class="service-card__desc">Search for a Category 1 emergency shelter near you. Filter by parish or wheelchair access. See which shelters are open.</p>
+            <p class="service-card__arrow">Find a shelter →</p>
+          </a>
+          <a href="prepare/" class="service-card">
+            <div style="width:40px;height:40px;background:var(--color-teal-10);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-teal-00)" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            </div>
+            <p class="service-card__heading">Get ready</p>
+            <p class="service-card__desc">Download the household checklist. See the 2026 storm forecast and official storm names for this season.</p>
+            <p class="service-card__arrow">Get ready →</p>
+          </a>
+        </div>
+      </div>
+
+      <!-- Key contacts -->
+      <section class="section" aria-labelledby="contacts-heading">
+        <h2 id="contacts-heading" style="font-size: var(--font-size-h2); font-weight: var(--font-weight-bold); line-height: var(--line-height-h2); margin-bottom: var(--spacing-s);">
+          Key contacts during a storm
+        </h2>
+        <div class="grid-4">
+          <a href="tel:2464362225" class="contact-card">
+            <p style="font-weight: 700; font-size: var(--font-size-caption); color: var(--color-mid-grey-00); margin:0;">DEM Emergency Line</p>
+            <p style="font-size: var(--font-size-h3); font-weight: 700; color: var(--color-teal-00); margin:0;">246-436-2225</p>
+          </a>
+          <a href="tel:511" class="contact-card">
+            <p style="font-weight: 700; font-size: var(--font-size-caption); color: var(--color-mid-grey-00); margin:0;">Barbados Met Office</p>
+            <p style="font-size: var(--font-size-h3); font-weight: 700; color: var(--color-teal-00); margin:0;">511</p>
+          </a>
+          <a href="tel:211" class="contact-card">
+            <p style="font-weight: 700; font-size: var(--font-size-caption); color: var(--color-mid-grey-00); margin:0;">Emergency services</p>
+            <p style="font-size: var(--font-size-h3); font-weight: 700; color: var(--color-teal-00); margin:0;">211</p>
+          </a>
+          <a href="tel:2464263990" class="contact-card">
+            <p style="font-weight: 700; font-size: var(--font-size-caption); color: var(--color-mid-grey-00); margin:0;">BWA (water outages)</p>
+            <p style="font-size: var(--font-size-h3); font-weight: 700; color: var(--color-teal-00); margin:0;">246-426-3990</p>
+          </a>
+        </div>
+      </section>
+
+      <!-- About StormReady -->
+      <section class="section" aria-labelledby="about-heading">
+        <h2 id="about-heading" style="font-size: var(--font-size-h2); font-weight: var(--font-weight-bold); line-height: var(--line-height-h2); margin-bottom: var(--spacing-s);">
+          About StormReady Barbados
+        </h2>
+        <p style="font-size: var(--font-size-body); line-height: var(--line-height-body); max-width: 660px; margin-bottom: var(--spacing-s);">
+          StormReady Barbados is a service of the Department of Emergency Management (DEM). It helps you plan ahead, find emergency shelter, and know what to do when a storm is coming.
+        </p>
+        <div style="padding: var(--spacing-s); background: var(--color-blue-10); border-left: 4px solid var(--color-blue-40); border-radius: var(--radius-sm);">
+          <p style="font-size: var(--font-size-body); line-height: var(--line-height-body); margin: 0;">
+            <strong>Hurricane season</strong> runs from <strong>1 June to 30 November 2026</strong>. Get ready before the season starts — do not wait for a storm warning.
+          </p>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+</main>
+
+<!-- Footer -->
+<footer class="govbb-footer">
+  <div class="govbb-container govbb-footer__inner">
+    <nav class="govbb-footer__nav" aria-label="Footer">
+      <a class="govbb-footer__link" href="#">Privacy</a>
+      <a class="govbb-footer__link" href="#">Accessibility</a>
+      <a class="govbb-footer__link" href="#">Contact DEM</a>
+    </nav>
+    <hr class="govbb-footer__divider" aria-hidden="true" />
+    <div class="govbb-footer__end">
+      <img class="govbb-footer__coat" src="../dist/assets/images/govbb-creast.svg" alt="Government of Barbados Coat of Arms" />
+      <div>
+        <p class="govbb-footer__copy">StormReady Barbados is a service of the Department of Emergency Management.</p>
+        <p class="govbb-footer__copy" style="opacity:0.7; font-size: var(--font-size-caption); margin-top: 4px;">In partnership with GovTech Barbados. Data from the DEM 2026 Emergency Shelter Booklet and Barbados Meteorological Services.</p>
+        <p class="govbb-footer__copy" style="margin-top: var(--spacing-xs);">© 2026 Government of Barbados</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Demo controls -->
+<div id="demo-controls">
+  <details>
+    <summary>Demo controls</summary>
+    <div class="demo-btns">
+      <p>Change DEM status banner:</p>
+      <button onclick="setStatus('normal')"   style="background:#eaf9f9;border:1px solid #ace6e9;color:#0e5f64;">No active storm</button>
+      <button onclick="setStatus('advisory')" style="background:#e5e9f2;border:1px solid #99a8cc;color:#00267f;">Advisory</button>
+      <button onclick="setStatus('watch')"    style="background:#ffe9a8;border:1px solid #e8a833;color:#6b4a00;">Hurricane watch</button>
+      <button onclick="setStatus('warning')"  style="background:#ffc4c4;border:1px solid #a42c2c;color:#a42c2c;">Hurricane warning</button>
+      <button onclick="setStatus('open')"     style="background:#e9f9f3;border:1px solid #1fbf84;color:#00654a;font-weight:700;">Shelters open</button>
+    </div>
+  </details>
+</div>
+
+<script>
+var STATUS_CONFIG = {
+  normal:   { label:'No active storm',                       message:'There is no hurricane watch or warning in effect for Barbados. Use this time to get prepared.' },
+  advisory: { label:'Tropical storm advisory',               message:'A tropical storm advisory is in effect. Monitor updates from DEM and Barbados Meteorological Services.' },
+  watch:    { label:'Hurricane watch',                       message:'A hurricane watch is in effect. A hurricane is possible within 48 hours. Prepare to shelter. Wait for DEM to say shelters are open before you go.' },
+  warning:  { label:'Hurricane warning',                     message:'A hurricane warning is in effect. A hurricane is expected within 36 hours. Complete your preparations now. Wait for DEM to open shelters.' },
+  open:     { label:'Shelters are OPEN — seek shelter now',  message:"DEM has opened Category 1 shelters. If you're in danger, go to your nearest shelter now." },
+};
+
+function setStatus(status) {
+  var cfg = STATUS_CONFIG[status] || STATUS_CONFIG.normal;
+  var banner = document.getElementById('dem-banner');
+  banner.setAttribute('data-status', status);
+  document.getElementById('banner-label').textContent   = cfg.label;
+  document.getElementById('banner-message').textContent = cfg.message;
+  var now  = new Date();
+  var time = now.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+  var date = now.toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+  document.getElementById('banner-updated').textContent = 'Last updated: ' + date + ', ' + time;
+  try { localStorage.setItem('dem-status', status); } catch(e) {}
+}
+
+/* Restore status from localStorage if set */
+(function() {
+  try {
+    var saved = localStorage.getItem('dem-status');
+    if (saved && STATUS_CONFIG[saved]) setStatus(saved);
+  } catch(e) {}
+})();
+</script>
+</body>
+</html>
