@@ -445,7 +445,7 @@ function locateUser() {
       weight: 2.5,
       fillOpacity: 1,
     }).addTo(map).bindPopup('<strong style="font-size:0.875rem;">Your location</strong>');
-    map.setView([lat, lng], 13);
+    map.flyTo([lat, lng], 15, { animate: true, duration: 1.5 });
   }, function() { /* permission denied — keep default Barbados view */ });
 }
 
