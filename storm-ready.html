@@ -227,15 +227,19 @@
 
       <p id="results-count" class="text-[1rem] text-bb-mid-grey-00 mb-m" aria-live="polite"></p>
 
-      <!-- Leaflet map -->
-      <div class="mb-xs border-2 border-bb-black-00 rounded-sm overflow-hidden no-print relative">
-        <div id="shelter-map"></div>
-        <button type="button" onclick="locateUser()"
-          title="Centre map on my location"
-          style="position:absolute;bottom:10px;left:10px;z-index:1000;background:#fff;border:2px solid #e0e4e9;border-radius:4px;padding:6px 10px;font-family:Figtree,sans-serif;font-size:0.875rem;font-weight:600;color:#0e5f64;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 1px 4px rgba(0,0,0,0.15);">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="9" stroke-dasharray="4 2"/></svg>
+      <!-- Locate button -->
+      <div class="mb-xs no-print">
+        <button type="button" onclick="locateUser()" id="locate-btn"
+          class="inline-flex items-center gap-2 px-s py-xs rounded-sm border-2 border-bb-black-00 text-[1rem] font-medium hover:bg-bb-grey-00 transition-colors">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
           Use my location
         </button>
+        <span id="locate-msg" class="ml-s text-[0.875rem] text-bb-mid-grey-00 hidden"></span>
+      </div>
+
+      <!-- Leaflet map -->
+      <div class="mb-xs border-2 border-bb-black-00 rounded-sm overflow-hidden no-print">
+        <div id="shelter-map"></div>
       </div>
       <p class="mb-m text-[0.875rem] text-bb-mid-grey-00 no-print">
         Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener" class="underline text-bb-teal-00 hover:text-bb-black-00">OpenStreetMap</a> contributors. Click a shelter card to zoom to it on the map.
@@ -428,25 +432,34 @@ function initMap() {
     attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     maxZoom: 19,
   }).addTo(map);
+
+  map.on('locationfound', function(e) {
+    if (locationMarker) locationMarker.remove();
+    locationMarker = L.circleMarker(e.latlng, {
+      radius: 9, fillColor: '#00267f', color: '#fff', weight: 2.5, fillOpacity: 1,
+    }).addTo(map).bindPopup('<strong style="font-size:0.875rem;">Your location</strong>').openPopup();
+    map.flyTo(e.latlng, 15, { animate: true, duration: 1.5 });
+    var msg = document.getElementById('locate-msg');
+    msg.textContent = 'Zoomed to your location.';
+    msg.classList.remove('hidden');
+    setTimeout(function() { msg.classList.add('hidden'); }, 3000);
+  });
+
+  map.on('locationerror', function() {
+    var msg = document.getElementById('locate-msg');
+    msg.textContent = 'Could not find your location. Check your browser permissions.';
+    msg.classList.remove('hidden');
+    setTimeout(function() { msg.classList.add('hidden'); }, 5000);
+  });
+
   addMarkers(SHELTERS);
-  locateUser();
 }
 
 function locateUser() {
-  if (!navigator.geolocation) return;
-  navigator.geolocation.getCurrentPosition(function(pos) {
-    var lat = pos.coords.latitude;
-    var lng = pos.coords.longitude;
-    if (locationMarker) locationMarker.remove();
-    locationMarker = L.circleMarker([lat, lng], {
-      radius: 9,
-      fillColor: '#00267f',
-      color: '#fff',
-      weight: 2.5,
-      fillOpacity: 1,
-    }).addTo(map).bindPopup('<strong style="font-size:0.875rem;">Your location</strong>');
-    map.flyTo([lat, lng], 15, { animate: true, duration: 1.5 });
-  }, function() { /* permission denied — keep default Barbados view */ });
+  var msg = document.getElementById('locate-msg');
+  msg.textContent = 'Finding your location…';
+  msg.classList.remove('hidden');
+  map.locate({ setView: false, maxZoom: 15, timeout: 10000 });
 }
 
 function makeIcon(color) {
