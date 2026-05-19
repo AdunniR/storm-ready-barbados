@@ -373,29 +373,14 @@ var SHELTERS = [
   { id:31, name:'Speightstown Community Centre',   address:'Speightstown',                    parish:'St. Peter',    phone:'246-422-8834', wheelchair:false, lat:13.2502, lng:-59.6432 },
 ];
 
-/* ─── Storm data ─── */
+/* ─── Storm data — official WMO pre-assigned names only ─── */
 var STORMS = [
-  { name:'Andrea',    month:'June',      region:'Tropical North Atlantic',      hurricane:false, major:false },
-  { name:'Barry',     month:'June',      region:'Caribbean Sea',                hurricane:false, major:false },
-  { name:'Chantal',   month:'July',      region:'Tropical Atlantic',            hurricane:false, major:false },
-  { name:'Dean',      month:'July',      region:'Eastern Caribbean',            hurricane:false, major:false },
-  { name:'Erin',      month:'August',    region:'North Atlantic',               hurricane:false, major:false },
-  { name:'Felix',     month:'August',    region:'Gulf of Mexico',               hurricane:true,  major:false },
-  { name:'Gabrielle', month:'August',    region:'Caribbean Sea',                hurricane:true,  major:false },
-  { name:'Harold',    month:'September', region:'Eastern Caribbean / Barbados', hurricane:true,  major:true  },
-  { name:'Ingrid',    month:'September', region:'North Atlantic',               hurricane:true,  major:false },
-  { name:'Jerry',     month:'September', region:'Leeward Islands',              hurricane:true,  major:false },
-  { name:'Karen',     month:'September', region:'Eastern Caribbean',            hurricane:true,  major:true  },
-  { name:'Lorenzo',   month:'October',   region:'Central Atlantic',             hurricane:true,  major:true  },
-  { name:'Melissa',   month:'October',   region:'Jamaica / Eastern Caribbean',  hurricane:true,  major:false, retired:true },
-  { name:'Nestor',    month:'October',   region:'Gulf of Mexico',               hurricane:true,  major:true  },
-  { name:'Olga',      month:'November',  region:'Eastern Atlantic',             hurricane:false, major:false },
-  { name:'Pablo',     month:'November',  region:'North Atlantic',               hurricane:false, major:false },
-  { name:'Rebekah',   month:'November',  region:'Eastern Atlantic',             hurricane:false, major:false },
-  { name:'Sebastien', month:'November',  region:'Subtropical Atlantic',         hurricane:false, major:false },
-  { name:'Tanya',     month:'November',  region:'Eastern Caribbean',            hurricane:false, major:false },
-  { name:'Van',       month:'November',  region:'North Atlantic',               hurricane:false, major:false },
-  { name:'Wendy',     month:'November',  region:'Tropical Atlantic',            hurricane:false, major:false },
+  { name:'Andrea' }, { name:'Barry' },    { name:'Chantal' }, { name:'Dean' },
+  { name:'Erin' },   { name:'Felix' },    { name:'Gabrielle'},{ name:'Harold' },
+  { name:'Ingrid' }, { name:'Jerry' },    { name:'Karen' },   { name:'Lorenzo' },
+  { name:'Melissa', retired:true },       { name:'Nestor' },  { name:'Olga' },
+  { name:'Pablo' },  { name:'Rebekah' },  { name:'Sebastien'},{ name:'Tanya' },
+  { name:'Van' },    { name:'Wendy' },
 ];
 
 /* ─── Shelter status ─── */
@@ -608,34 +593,36 @@ function showStormList(type) {
     detail.setAttribute('data-type', '');
     return;
   }
-  var storms, title, accentColor;
-  if (type === 'named') {
-    storms = STORMS;
-    title = 'All 2026 named storms (' + storms.length + ')';
-    accentColor = '#0e5f64';
-  } else if (type === 'hurricane') {
-    storms = STORMS.filter(function(s) { return s.hurricane; });
-    title = 'Forecast hurricanes (' + storms.length + ')';
-    accentColor = '#e8a833';
-  } else {
-    storms = STORMS.filter(function(s) { return s.major; });
-    title = 'Forecast major hurricanes, Cat 3+ (' + storms.length + ')';
-    accentColor = '#a42c2c';
-  }
   detail.setAttribute('data-type', type);
-  detail.innerHTML =
-    '<p style="font-weight:700;font-size:1.125rem;margin:0 0 0.875rem;color:' + accentColor + ';">' + title + '</p>' +
-    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:0.5rem;">' +
-    storms.map(function(s) {
-      var border = s.retired ? '#ffc4c4' : '#e0e4e9';
-      var bg     = s.retired ? '#fff0f0' : '#f8f9fa';
-      var retiredBadge = s.retired ? '<span style="font-size:0.7rem;color:#a42c2c;font-weight:600;margin-left:4px;">Retired</span>' : '';
-      return '<div style="padding:0.625rem 0.75rem;border-radius:4px;border:1.5px solid ' + border + ';background:' + bg + ';">' +
-        '<p style="font-weight:700;font-size:0.9375rem;margin:0 0 2px;">' + s.name + retiredBadge + '</p>' +
-        '<p style="font-size:0.75rem;color:#595959;margin:0;">' + s.month + ' &middot; ' + s.region + '</p>' +
-      '</div>';
-    }).join('') +
-    '</div>';
+
+  if (type === 'named') {
+    detail.innerHTML =
+      '<p style="font-weight:700;font-size:1.125rem;margin:0 0 0.875rem;color:#0e5f64;">Official 2026 storm names (' + STORMS.length + ')</p>' +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:0.5rem;">' +
+      STORMS.map(function(s) {
+        var border = s.retired ? '#ffc4c4' : '#e0e4e9';
+        var bg     = s.retired ? '#fff0f0' : '#f8f9fa';
+        var badge  = s.retired ? '<span style="display:block;font-size:0.7rem;color:#a42c2c;font-weight:600;margin-top:2px;">Retired name</span>' : '';
+        return '<div style="padding:0.625rem 0.75rem;border-radius:4px;border:1.5px solid ' + border + ';background:' + bg + ';text-align:center;">' +
+          '<p style="font-weight:700;font-size:0.9375rem;margin:0;">' + s.name + '</p>' + badge +
+        '</div>';
+      }).join('') +
+      '</div>' +
+      '<p style="font-size:0.8rem;color:#595959;margin:0.75rem 0 0;">Names are pre-assigned by the World Meteorological Organisation before the season begins.</p>';
+  } else {
+    var isHurricane = type === 'hurricane';
+    var count = isHurricane ? '9' : '4';
+    var label = isHurricane ? 'hurricanes' : 'major hurricanes (Category 3+)';
+    var color = isHurricane ? '#e8a833' : '#a42c2c';
+    detail.innerHTML =
+      '<p style="font-weight:700;font-size:1.125rem;margin:0 0 0.5rem;color:' + color + ';">Forecast: ' + count + ' ' + label + '</p>' +
+      '<p style="font-size:1rem;color:#595959;line-height:1.5;max-width:560px;">' +
+        'Storm names are assigned in order as each tropical storm forms during the season. ' +
+        'We cannot know in advance which names will reach hurricane or major hurricane strength — ' +
+        'only that the seasonal forecast expects ' + count + ' to do so.' +
+      '</p>' +
+      '<p style="font-size:0.8rem;color:#595959;margin:0.5rem 0 0;">Source: Barbados Meteorological Services, April 2026 seasonal outlook.</p>';
+  }
   detail.classList.remove('hidden');
 }
 
