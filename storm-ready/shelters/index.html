@@ -25,8 +25,7 @@
     .field-wrap {
       position: relative; display: inline-flex; width: 100%;
       border: 2px solid var(--color-black-00); border-radius: var(--radius-sm);
-      background: #fff; align-items: center;
-      transition: box-shadow 0.15s;
+      background: #fff; align-items: center; transition: box-shadow 0.15s;
     }
     .field-wrap:hover { box-shadow: var(--shadow-form-hover); }
     .field-wrap:focus-within { outline: 4px solid var(--color-teal-100); outline-offset: 0; }
@@ -58,14 +57,45 @@
     .shelter-card { cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s; }
     .shelter-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
 
-    /* Grids */
+    /* Filters row */
     .filters-row { display: flex; flex-wrap: wrap; gap: var(--spacing-s); align-items: flex-end; }
     .filter-field { display: flex; flex-direction: column; gap: var(--spacing-xs); }
+
+    /* Cards grid */
     .cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-s); }
     @media (max-width: 640px) { .cards-grid { grid-template-columns: 1fr; } }
 
+    /* Mobile map/list toggle */
+    .view-tabs {
+      display: none;
+      gap: 0;
+      border: 2px solid var(--color-black-00);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      margin-bottom: var(--spacing-s);
+    }
+    .view-tab {
+      flex: 1; padding: var(--spacing-xs) var(--spacing-s);
+      font-size: var(--font-size-caption); font-weight: 600;
+      font-family: inherit; background: #fff; border: none;
+      cursor: pointer; transition: background 0.15s; color: var(--color-black-00);
+    }
+    .view-tab + .view-tab { border-left: 2px solid var(--color-black-00); }
+    .view-tab[aria-selected="true"] { background: var(--color-black-00); color: #fff; }
+    @media (max-width: 640px) {
+      .view-tabs { display: flex; }
+      .map-panel { display: none; }
+      .map-panel.active { display: block; }
+      .list-panel { display: block; }
+      .list-panel.map-active { display: none; }
+    }
+
+    /* Breadcrumbs */
+    .breadcrumb { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: var(--spacing-m); font-size: var(--font-size-caption); }
+    .breadcrumb__sep { color: var(--color-mid-grey-00); }
+    .breadcrumb__current { color: var(--color-mid-grey-00); }
+
     .page-content { padding: var(--spacing-l) 0; }
-    .back-link { display: inline-flex; align-items: center; gap: var(--spacing-xs); margin-bottom: var(--spacing-m); }
 
     @media print {
       .no-print { display: none !important; }
@@ -98,39 +128,38 @@
 
 <main>
 
-  <!-- Alpha banner -->
-  <div class="govbb-status-banner govbb-status-banner--alpha" role="status">
-    <div class="govbb-container">
-      <p>This page is in <a class="govbb-link" href="#">Alpha</a>. Your feedback helps us improve.</p>
-    </div>
-  </div>
-
   <!-- DEM Status Banner -->
   <div id="dem-banner" data-status="normal" role="status" aria-live="polite">
     <div class="govbb-container" style="padding-block: var(--spacing-s);">
-      <div style="display:flex; flex-wrap:wrap; gap: var(--spacing-xs); align-items: flex-start; justify-content: space-between;">
-        <div>
-          <p style="font-weight: 700; font-size: var(--font-size-body); line-height: 1.3; margin: 0;" id="banner-label">No active storm</p>
-          <p style="font-size: var(--font-size-caption); line-height: 1.5; margin: 4px 0 0;" id="banner-message">There is no hurricane watch or warning in effect for Barbados. Use this time to get prepared.</p>
-        </div>
-        <p style="font-size: 0.875rem; opacity: 0.75; margin: 0; white-space: nowrap;" id="banner-updated">Last updated: 19 May 2026, 9.00am</p>
-      </div>
+      <p style="font-weight: 700; font-size: var(--font-size-body); line-height: 1.3; margin: 0;" id="banner-label">No active storm</p>
+      <p style="font-size: var(--font-size-caption); line-height: 1.5; margin: 4px 0 0;" id="banner-message">There is no hurricane watch or warning in effect for Barbados. Use this time to get prepared.</p>
+      <p id="banner-action" style="margin: 6px 0 0; font-size: var(--font-size-caption);"></p>
+      <p style="font-size: 0.8rem; opacity: 0.7; margin: 4px 0 0;" id="banner-updated">Last updated: 19 May 2026, 9.00am</p>
     </div>
   </div>
 
   <div class="govbb-container">
     <div class="page-content">
 
-      <!-- Back link -->
-      <a href="../" class="govbb-link back-link" style="font-size: var(--font-size-caption);">← Back to StormReady Barbados</a>
+      <!-- Breadcrumbs -->
+      <nav aria-label="Breadcrumb" class="breadcrumb">
+        <a href="../" class="govbb-link">StormReady Barbados</a>
+        <span class="breadcrumb__sep" aria-hidden="true">›</span>
+        <span class="breadcrumb__current" aria-current="page">Find a shelter</span>
+      </nav>
 
       <!-- Caption + heading -->
       <p style="border-left: 4px solid var(--color-blue-40); padding: var(--spacing-xs) 0 var(--spacing-xs) var(--spacing-s); color: var(--color-mid-grey-00); font-size: var(--font-size-caption); margin-bottom: var(--spacing-s);">StormReady Barbados</p>
       <h1 style="font-size: var(--font-size-h1); font-weight: var(--font-weight-bold); line-height: var(--line-height-h1); margin-bottom: var(--spacing-m);">Find a shelter</h1>
 
+      <!-- Category 1 callout — immediately under heading -->
+      <div style="margin-bottom: var(--spacing-m); padding: var(--spacing-s); background: var(--color-blue-10); border-left: 4px solid var(--color-blue-40); border-radius: var(--radius-sm);">
+        <h2 style="font-size: var(--font-size-h4); font-weight: var(--font-weight-bold); margin-bottom: var(--spacing-xs);">What is a Category 1 shelter?</h2>
+        <p style="font-size: var(--font-size-caption); line-height: var(--line-height-body);">Category 1 shelters are the strongest public buildings in Barbados, certified by DEM to withstand hurricane-force winds. They are activated only when DEM says so. If you live in a solid concrete house away from the coast, you may not need to go. If you live in a wooden house, near the coast, or in a low-lying area, a Category 1 shelter is your safest option.</p>
+      </div>
+
       <!-- Filters -->
       <div class="filters-row no-print" style="margin-bottom: var(--spacing-s);">
-        <!-- Parish -->
         <div class="filter-field" style="min-width: 200px;">
           <label for="parish-filter" style="font-size: var(--font-size-caption); font-weight: var(--font-weight-bold);">Parish</label>
           <div class="field-wrap">
@@ -151,7 +180,6 @@
             <svg class="select-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
         </div>
-        <!-- Wheelchair -->
         <div class="filter-field">
           <span style="font-size: var(--font-size-caption); font-weight: var(--font-weight-bold); opacity: 0;">&nbsp;</span>
           <label style="display:flex; align-items:center; gap: var(--spacing-s); cursor: pointer;">
@@ -167,7 +195,6 @@
             <span style="font-size: var(--font-size-caption); font-weight: 500;">Wheelchair accessible only</span>
           </label>
         </div>
-        <!-- Search button -->
         <div class="filter-field">
           <span style="font-size: var(--font-size-caption); font-weight: var(--font-weight-bold); opacity: 0;">&nbsp;</span>
           <button type="button" onclick="searchShelters()" class="govbb-btn" style="white-space:nowrap;">
@@ -179,40 +206,46 @@
 
       <p id="results-count" style="font-size: var(--font-size-caption); color: var(--color-mid-grey-00); margin-bottom: var(--spacing-s);" aria-live="polite"></p>
 
-      <!-- Use my location -->
-      <div style="margin-bottom: var(--spacing-xs);" class="no-print">
-        <button type="button" onclick="locateUser()" class="govbb-btn--secondary" style="font-size: var(--font-size-caption);">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
-          Use my location
-        </button>
-        <span id="locate-msg" style="margin-left: var(--spacing-s); font-size: 0.875rem; color: var(--color-mid-grey-00); display:none;"></span>
+      <!-- Mobile view tabs -->
+      <div class="view-tabs no-print" role="tablist" aria-label="View">
+        <button type="button" class="view-tab" id="tab-list" role="tab" aria-selected="true" onclick="setView('list')">List</button>
+        <button type="button" class="view-tab" id="tab-map"  role="tab" aria-selected="false" onclick="setView('map')">Map</button>
       </div>
 
-      <!-- Leaflet map -->
-      <div style="margin-bottom: var(--spacing-xs); border: 2px solid var(--color-black-00); border-radius: var(--radius-sm); overflow: hidden;" class="no-print">
-        <div id="shelter-map"></div>
+      <!-- Map panel -->
+      <div class="map-panel no-print" id="map-panel">
+        <!-- Use my location -->
+        <div style="margin-bottom: var(--spacing-xs);">
+          <button type="button" onclick="locateUser()" class="govbb-btn--secondary" style="font-size: var(--font-size-caption);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+            Use my location
+          </button>
+          <span id="locate-msg" style="margin-left: var(--spacing-s); font-size: 0.875rem; color: var(--color-mid-grey-00); display:none;"></span>
+        </div>
+
+        <!-- Leaflet map -->
+        <div style="margin-bottom: var(--spacing-xs); border: 2px solid var(--color-black-00); border-radius: var(--radius-sm); overflow: hidden;">
+          <div id="shelter-map"></div>
+        </div>
+        <p style="margin-bottom: var(--spacing-m); font-size: 0.875rem; color: var(--color-mid-grey-00);">
+          Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener" class="govbb-link">OpenStreetMap</a> contributors. Click a shelter card to zoom to it on the map.
+        </p>
       </div>
-      <p style="margin-bottom: var(--spacing-m); font-size: 0.875rem; color: var(--color-mid-grey-00);" class="no-print">
-        Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener" class="govbb-link">OpenStreetMap</a> contributors. Click a shelter card to zoom to it on the map.
-      </p>
 
-      <!-- Shelter cards -->
-      <div id="shelter-cards" class="cards-grid"></div>
+      <!-- List panel (default on mobile) -->
+      <div class="list-panel" id="list-panel">
+        <!-- Shelter cards -->
+        <div id="shelter-cards" class="cards-grid"></div>
 
-      <div id="no-results" style="display:none; padding: var(--spacing-l) 0; text-align: center; color: var(--color-mid-grey-00);">
-        <p style="font-size: var(--font-size-body);">No shelters match your search.</p>
-        <p style="font-size: var(--font-size-caption); margin-top: var(--spacing-xs);">Try a different parish or clear your filters.</p>
-      </div>
+        <div id="no-results" style="display:none; padding: var(--spacing-l) 0; text-align: center; color: var(--color-mid-grey-00);">
+          <p style="font-size: var(--font-size-body);">No shelters match your search.</p>
+          <p style="font-size: var(--font-size-caption); margin-top: var(--spacing-xs);">Try a different parish or clear your filters.</p>
+        </div>
 
-      <p style="margin-top: var(--spacing-m); font-size: 0.875rem; color: var(--color-mid-grey-00);">
-        Source: DEM 2026 Emergency Shelter Booklet. Data correct as of 19 May 2026.
-        <a href="#" class="govbb-link">Report an error</a>.
-      </p>
-
-      <!-- Category 1 callout -->
-      <div style="margin-top: var(--spacing-l); padding: var(--spacing-s); background: var(--color-blue-10); border-left: 4px solid var(--color-blue-40); border-radius: var(--radius-sm);">
-        <h3 style="font-size: var(--font-size-h4); font-weight: var(--font-weight-bold); margin-bottom: var(--spacing-xs);">What is a Category 1 shelter?</h3>
-        <p style="font-size: var(--font-size-caption); line-height: var(--line-height-body);">Category 1 shelters are the strongest public buildings in Barbados, certified by DEM to withstand hurricane-force winds. They are activated only when DEM says so. If you live in a solid concrete house away from the coast, you may not need to go. If you live in a wooden house, near the coast, or in a low-lying area, a Category 1 shelter is your safest option.</p>
+        <p style="margin-top: var(--spacing-m); font-size: 0.875rem; color: var(--color-mid-grey-00);">
+          Source: DEM 2026 Emergency Shelter Booklet. Data correct as of 19 May 2026.
+          <a href="#" class="govbb-link">Report an error</a>.
+        </p>
       </div>
 
     </div>
@@ -241,6 +274,26 @@
 </footer>
 
 <script>
+/* ─── Mobile view toggle ─── */
+function setView(view) {
+  var mapPanel  = document.getElementById('map-panel');
+  var listPanel = document.getElementById('list-panel');
+  var tabList   = document.getElementById('tab-list');
+  var tabMap    = document.getElementById('tab-map');
+  if (view === 'map') {
+    mapPanel.classList.add('active');
+    listPanel.classList.add('map-active');
+    tabMap.setAttribute('aria-selected', 'true');
+    tabList.setAttribute('aria-selected', 'false');
+    if (map) setTimeout(function() { map.invalidateSize(); }, 50);
+  } else {
+    mapPanel.classList.remove('active');
+    listPanel.classList.remove('map-active');
+    tabList.setAttribute('aria-selected', 'true');
+    tabMap.setAttribute('aria-selected', 'false');
+  }
+}
+
 /* ─── Shelter data ─── */
 var SHELTERS = [
   { id:1,  name:'Oistins Primary School',          address:'Market Street, Oistins',        parish:'Christ Church', phone:'246-428-6190', wheelchair:true,  lat:13.0683, lng:-59.5383 },
@@ -289,20 +342,20 @@ var SHELTER_STATUS_CONFIG = {
 };
 
 var STATUS_CONFIG = {
-  normal:   { label:'No active storm',                       message:'There is no hurricane watch or warning in effect for Barbados. Use this time to get prepared.' },
-  advisory: { label:'Tropical storm advisory',               message:'A tropical storm advisory is in effect. Monitor updates from DEM and Barbados Meteorological Services.' },
-  watch:    { label:'Hurricane watch',                       message:'A hurricane watch is in effect. A hurricane is possible within 48 hours. Prepare to shelter. Wait for DEM to say shelters are open before you go.' },
-  warning:  { label:'Hurricane warning',                     message:'A hurricane warning is in effect. A hurricane is expected within 36 hours. Complete your preparations now. Wait for DEM to open shelters.' },
-  open:     { label:'Shelters are OPEN — seek shelter now',  message:"DEM has opened Category 1 shelters. If you're in danger, go to your nearest shelter now." },
+  normal:   { label:'No active storm',                       message:'There is no hurricane watch or warning in effect for Barbados. Use this time to get prepared.', action: '' },
+  advisory: { label:'Tropical storm advisory',               message:'A tropical storm advisory is in effect. Monitor updates from DEM and Barbados Meteorological Services.', action: '' },
+  watch:    { label:'Hurricane watch',                       message:'A hurricane watch is in effect. A hurricane is possible within 48 hours. Prepare to shelter. Wait for DEM to say shelters are open before you go.', action: '' },
+  warning:  { label:'Hurricane warning',                     message:'A hurricane warning is in effect. A hurricane is expected within 36 hours. Complete your preparations now. Wait for DEM to open shelters.', action: '' },
+  open:     { label:'Shelters are OPEN — seek shelter now',  message:"DEM has opened Category 1 shelters. If you're in danger, go to your nearest shelter now.", action: '<a href="#shelter-cards" style="color:inherit;font-weight:700;text-decoration:underline;text-underline-offset:2px;">View open shelters ↓</a>' },
 };
 
-/* ─── Status sync from localStorage ─── */
 function applyStatus(status) {
   var cfg = STATUS_CONFIG[status] || STATUS_CONFIG.normal;
   var banner = document.getElementById('dem-banner');
   banner.setAttribute('data-status', status);
   document.getElementById('banner-label').textContent   = cfg.label;
   document.getElementById('banner-message').textContent = cfg.message;
+  document.getElementById('banner-action').innerHTML    = cfg.action;
   var shelterStatus = { normal:'closed', advisory:'advisory', watch:'watch', warning:'warning', open:'open' }[status] || 'closed';
   SHELTERS.forEach(function(s) { SHELTER_STATUSES[s.id] = shelterStatus; });
 }
@@ -316,7 +369,6 @@ function initMap() {
     attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     maxZoom: 19,
   }).addTo(map);
-
   map.on('locationfound', function(e) {
     if (locationMarker) locationMarker.remove();
     locationMarker = L.circleMarker(e.latlng, {
@@ -328,7 +380,6 @@ function initMap() {
   map.on('locationerror', function() {
     showLocateMsg('Could not find your location. Check your browser permissions.', 5000);
   });
-
   addMarkers(SHELTERS);
 }
 
@@ -382,11 +433,13 @@ function addMarkers(shelters) {
 function flyToShelter(id) {
   var s = SHELTERS.find(function(x) { return x.id === id; });
   if (!s || !markerMap[id]) return;
+  /* On mobile, switch to map view first */
+  if (window.innerWidth <= 640) setView('map');
   document.getElementById('shelter-map').closest('div').scrollIntoView({ behavior:'smooth', block:'center' });
   setTimeout(function() {
     map.setView([s.lat, s.lng], 16, { animate:true });
     markerMap[id].openPopup();
-  }, 300);
+  }, 350);
 }
 
 /* ─── Shelter cards ─── */
@@ -394,7 +447,6 @@ function renderCards(shelters) {
   var container = document.getElementById('shelter-cards');
   var noResults = document.getElementById('no-results');
   var countEl   = document.getElementById('results-count');
-
   if (shelters.length === 0) {
     container.innerHTML = '';
     noResults.style.display = 'block';
@@ -415,15 +467,14 @@ function renderCards(shelters) {
     var wc = s.wheelchair
       ? '<span style="display:inline-flex;align-items:center;gap:5px;font-size:0.875rem;background:#e5e9f2;color:#00267f;padding:3px 10px;border-radius:4px;font-weight:600;">&#9855; Wheelchair accessible</span>'
       : '';
-    return '<div class="shelter-card" onclick="flyToShelter(' + s.id + ')" ' +
+    return '<div class="shelter-card" onclick="flyToShelter(' + s.id + ')" id="card-' + s.id + '" ' +
       'style="border:2px solid ' + cfg.border + ';border-radius:6px;padding:1rem;display:flex;flex-direction:column;gap:8px;">' +
       '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">' +
         '<strong style="font-size:1.125rem;line-height:1.3;">' + s.name + '</strong>' +
         '<span style="font-size:0.75rem;font-weight:500;color:#595959;background:#e0e4e9;padding:2px 8px;border-radius:4px;white-space:nowrap;flex-shrink:0;">' + s.parish + '</span>' +
       '</div>' +
-      pill +
+      pill + wc +
       '<p style="color:#595959;font-size:1rem;margin:0;">' + s.address + '</p>' +
-      wc +
       '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;">' +
         '<a href="tel:' + s.phone + '" onclick="event.stopPropagation()" style="font-size:1rem;color:#0e5f64;text-decoration:underline;text-underline-offset:2px;font-weight:500;">' + s.phone + '</a>' +
         '<a href="https://www.google.com/maps/dir/?api=1&destination=' + s.lat + ',' + s.lng + '" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="font-size:1rem;color:#0e5f64;text-decoration:underline;text-underline-offset:2px;font-weight:500;">Get directions</a>' +
@@ -447,10 +498,13 @@ function searchShelters() {
 
 /* ─── Init ─── */
 document.addEventListener('DOMContentLoaded', function() {
-  /* Sync DEM status from localStorage */
   try {
     var saved = localStorage.getItem('dem-status');
-    if (saved && STATUS_CONFIG[saved]) applyStatus(saved);
+    if (saved && STATUS_CONFIG[saved]) {
+      applyStatus(saved);
+      /* Re-render markers with updated status */
+      addMarkers(SHELTERS);
+    }
   } catch(e) {}
   initMap();
 });
