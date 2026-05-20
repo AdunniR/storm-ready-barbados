@@ -87,13 +87,18 @@
         <p style="font-size: var(--font-size-body); line-height: var(--line-height-body); max-width: 600px; margin-bottom: var(--spacing-m);">
           Use this checklist to make sure your household is ready. It covers water, food, documents, first aid, communication, and what to do before the storm hits.
         </p>
-        <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-s);" class="no-print">
-          <button type="button" onclick="openChecklist()" class="govbb-btn">
-            Open household checklist
-          </button>
-          <button type="button" onclick="window.print()" class="govbb-btn--secondary">
-            Save this page as PDF
-          </button>
+        <div class="no-print">
+          <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-s); align-items: center;">
+            <button type="button" onclick="openChecklist()" class="govbb-btn" aria-describedby="checklist-hint">
+              Open checklist in a new tab
+            </button>
+            <button type="button" onclick="window.print()" class="govbb-btn--secondary" style="font-size: var(--font-size-caption);">
+              Print / save this page as PDF
+            </button>
+          </div>
+          <p id="checklist-hint" style="font-size: var(--font-size-caption); color: var(--color-mid-grey-00); margin: var(--spacing-xs) 0 0;">
+            The checklist opens in a new tab. You can tick items off, then print or save it as a PDF from there.
+          </p>
         </div>
 
         <!-- Quick tips -->
