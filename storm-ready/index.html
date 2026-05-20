@@ -234,11 +234,11 @@
           <p style="font-size: 0.875rem; color: var(--color-mid-grey-00); margin-bottom: var(--spacing-s);">Click a box to see more detail.</p>
           <div class="storms-grid">
             <button type="button" class="storm-stat-btn storm-stat-btn--named" onclick="showStormList('named')">
-              <p style="font-size: var(--font-size-h2); font-weight: var(--font-weight-bold); color: var(--color-teal-00); margin: 0;">19</p>
+              <p id="named-count" style="font-size: var(--font-size-h2); font-weight: var(--font-weight-bold); color: var(--color-teal-00); margin: 0;">21</p>
               <p style="font-size: 0.875rem; color: var(--color-mid-grey-00); margin: 0;">Named storms</p>
             </button>
             <button type="button" class="storm-stat-btn storm-stat-btn--hurricane" onclick="showStormList('hurricane')">
-              <p style="font-size: var(--font-size-h2); font-weight: var(--font-weight-bold); color: var(--color-yellow-00); margin: 0;">9</p>
+              <p style="font-size: var(--font-size-h2); font-weight: var(--font-weight-bold); color: #a07000; margin: 0;">9</p>
               <p style="font-size: 0.875rem; color: var(--color-mid-grey-00); margin: 0;">Hurricanes</p>
             </button>
             <button type="button" class="storm-stat-btn storm-stat-btn--major" onclick="showStormList('major')">
@@ -300,6 +300,9 @@ var STORMS = [
   { name:'Pablo' },  { name:'Rebekah' },  { name:'Sebastien'},{ name:'Tanya' },
   { name:'Van' },    { name:'Wendy' },
 ];
+
+/* Keep the tile count in sync with the array at runtime */
+document.getElementById('named-count').textContent = STORMS.length;
 
 function showStormList(type) {
   var detail = document.getElementById('storm-detail');
