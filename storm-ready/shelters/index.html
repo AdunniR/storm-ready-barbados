@@ -164,7 +164,7 @@
           <label for="parish-filter" style="font-size: var(--font-size-caption); font-weight: var(--font-weight-bold);">Parish</label>
           <div class="field-wrap">
             <select id="parish-filter">
-              <option value="">All parishes</option>
+              <option value="">Select parish</option>
               <option>Christ Church</option>
               <option>St. Andrew</option>
               <option>St. George</option>
@@ -360,8 +360,24 @@ function applyStatus(status) {
   SHELTERS.forEach(function(s) { SHELTER_STATUSES[s.id] = shelterStatus; });
 }
 
+/* ─── Distance helpers ─── */
+function haversineKm(lat1, lng1, lat2, lng2) {
+  var R = 6371;
+  var dLat = (lat2 - lat1) * Math.PI / 180;
+  var dLng = (lng2 - lng1) * Math.PI / 180;
+  var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+          Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+          Math.sin(dLng/2) * Math.sin(dLng/2);
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+function fmtDist(km) {
+  return km < 1 ? Math.round(km * 1000) + ' m away' : km.toFixed(1) + ' km away';
+}
+
 /* ─── Leaflet map ─── */
 var map, markerMap = {}, locationMarker = null, currentResults = null;
+var userLat = null, userLng = null;
 
 function initMap() {
   map = L.map('shelter-map', { zoomControl: true }).setView([13.16, -59.56], 11);
@@ -370,12 +386,24 @@ function initMap() {
     maxZoom: 19,
   }).addTo(map);
   map.on('locationfound', function(e) {
+    userLat = e.latlng.lat;
+    userLng = e.latlng.lng;
+
     if (locationMarker) locationMarker.remove();
     locationMarker = L.circleMarker(e.latlng, {
       radius: 9, fillColor: '#00267f', color: '#fff', weight: 2.5, fillOpacity: 1,
     }).addTo(map).bindPopup('<strong style="font-size:0.875rem;">Your location</strong>').openPopup();
-    map.flyTo(e.latlng, 15, { animate: true, duration: 1.5 });
-    showLocateMsg('Zoomed to your location.', 3000);
+    map.flyTo(e.latlng, 13, { animate: true, duration: 1.5 });
+
+    /* Sort all shelters by distance and show the list */
+    var sorted = SHELTERS.slice().map(function(s) {
+      return Object.assign({}, s, { _dist: haversineKm(userLat, userLng, s.lat, s.lng) });
+    }).sort(function(a, b) { return a._dist - b._dist; });
+
+    currentResults = sorted;
+    addMarkers(sorted);
+    renderCards(sorted, true /* showDist */);
+    showLocateMsg('Showing shelters nearest to you.', 4000);
   });
   map.on('locationerror', function() {
     showLocateMsg('Could not find your location. Check your browser permissions.', 5000);
@@ -443,7 +471,7 @@ function flyToShelter(id) {
 }
 
 /* ─── Shelter cards ─── */
-function renderCards(shelters) {
+function renderCards(shelters, showDist) {
   var container = document.getElementById('shelter-cards');
   var noResults = document.getElementById('no-results');
   var countEl   = document.getElementById('results-count');
@@ -454,9 +482,11 @@ function renderCards(shelters) {
     return;
   }
   noResults.style.display = 'none';
-  countEl.textContent = shelters.length === SHELTERS.length
-    ? 'Showing all ' + shelters.length + ' shelters'
-    : 'Showing ' + shelters.length + ' of 31 shelters';
+  var label = showDist ? 'Showing ' + shelters.length + ' shelters nearest to you'
+    : shelters.length === SHELTERS.length
+      ? 'Showing all ' + shelters.length + ' shelters'
+      : 'Showing ' + shelters.length + ' of 31 shelters';
+  countEl.textContent = label;
 
   container.innerHTML = shelters.map(function(s) {
     var cfg = SHELTER_STATUS_CONFIG[SHELTER_STATUSES[s.id]] || SHELTER_STATUS_CONFIG.closed;
@@ -467,13 +497,16 @@ function renderCards(shelters) {
     var wc = s.wheelchair
       ? '<span style="display:inline-flex;align-items:center;gap:5px;font-size:0.875rem;background:#e5e9f2;color:#00267f;padding:3px 10px;border-radius:4px;font-weight:600;">&#9855; Wheelchair accessible</span>'
       : '';
+    var distBadge = (showDist && s._dist != null)
+      ? '<span style="font-size:0.8rem;color:#0e5f64;font-weight:600;">&#x2316; ' + fmtDist(s._dist) + '</span>'
+      : '';
     return '<div class="shelter-card" onclick="flyToShelter(' + s.id + ')" id="card-' + s.id + '" ' +
       'style="border:2px solid ' + cfg.border + ';border-radius:6px;padding:1rem;display:flex;flex-direction:column;gap:8px;">' +
       '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">' +
         '<strong style="font-size:1.125rem;line-height:1.3;">' + s.name + '</strong>' +
         '<span style="font-size:0.75rem;font-weight:500;color:#595959;background:#e0e4e9;padding:2px 8px;border-radius:4px;white-space:nowrap;flex-shrink:0;">' + s.parish + '</span>' +
       '</div>' +
-      pill + wc +
+      pill + wc + distBadge +
       '<p style="color:#595959;font-size:1rem;margin:0;">' + s.address + '</p>' +
       '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;">' +
         '<a href="tel:' + s.phone + '" onclick="event.stopPropagation()" style="font-size:1rem;color:#0e5f64;text-decoration:underline;text-underline-offset:2px;font-weight:500;">' + s.phone + '</a>' +
