@@ -88,17 +88,9 @@
           Use this checklist to make sure your household is ready. It covers water, food, documents, first aid, communication, and what to do before the storm hits.
         </p>
         <div class="no-print">
-          <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-s); align-items: center;">
-            <button type="button" onclick="openChecklist(false)" class="govbb-btn">
-              Open household checklist
-            </button>
-            <button type="button" onclick="openChecklist(true)" class="govbb-btn--secondary">
-              Save checklist as PDF
-            </button>
-          </div>
-          <p style="font-size: var(--font-size-caption); color: var(--color-mid-grey-00); margin: var(--spacing-xs) 0 0;">
-            The checklist opens in a new tab where you can tick items off. "Save as PDF" opens it and prompts your browser to save a PDF copy.
-          </p>
+          <button type="button" onclick="openChecklist(false)" class="govbb-btn">
+            Open household checklist
+          </button>
         </div>
 
         <!-- Quick tips -->
@@ -119,6 +111,15 @@
             <h3 style="font-size: var(--font-size-h4); font-weight: var(--font-weight-bold); margin-bottom: var(--spacing-xs);">Before it hits</h3>
             <p style="font-size: var(--font-size-caption); line-height: var(--line-height-body);">Board up windows, bring in outdoor items, top up your vehicle with petrol, and let family know your shelter plan.</p>
           </div>
+        </div>
+
+        <div class="no-print" style="margin-top: var(--spacing-m);">
+          <button type="button" onclick="openChecklist(true)" class="govbb-btn--secondary">
+            Save checklist as PDF
+          </button>
+          <p style="font-size: var(--font-size-caption); color: var(--color-mid-grey-00); margin: var(--spacing-xs) 0 0;">
+            Opens the full checklist in a new tab and prompts your browser to save it as a PDF.
+          </p>
         </div>
       </section>
 
