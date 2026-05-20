@@ -86,15 +86,7 @@
     .section { margin-top: var(--spacing-l); padding-top: var(--spacing-l); border-top: 2px solid var(--color-grey-00); }
     .section:first-child { margin-top: 0; padding-top: 0; border-top: none; }
 
-    /* Demo controls */
-    #demo-controls { position: fixed; top: 1rem; right: 1rem; z-index: 9999; max-width: 220px; }
-    #demo-controls details { background: #fff; border: 2px dashed var(--color-blue-40); border-radius: 6px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
-    #demo-controls summary { padding: 0.5rem 0.75rem; font-size: 0.8rem; font-weight: 700; color: var(--color-mid-grey-00); cursor: pointer; list-style: none; display: flex; align-items: center; gap: 6px; }
-    #demo-controls .demo-btns { padding: 0.5rem 0.75rem; border-top: 1px solid var(--color-grey-00); display: flex; flex-direction: column; gap: 6px; }
-    #demo-controls .demo-btns p { font-size: 0.7rem; color: var(--color-mid-grey-00); margin: 0 0 4px; }
-    #demo-controls .demo-btns button { padding: 4px 8px; font-size: 0.78rem; border-radius: 4px; cursor: pointer; text-align: left; font-family: inherit; }
-
-    @media print { #demo-controls { display: none; } .no-print { display: none !important; } }
+    @media print { .no-print { display: none !important; } }
   </style>
 </head>
 <body>
@@ -119,6 +111,13 @@
     </a>
   </div>
 </header>
+
+<!-- Alpha banner -->
+<div class="govbb-status-banner govbb-status-banner--alpha" role="status" aria-label="alpha status banner" aria-live="polite">
+  <div class="govbb-container">
+    <p>This page is in <a class="govbb-link govbb-link--secondary" href="/what-we-mean-by-alpha">Alpha</a>.</p>
+  </div>
+</div>
 
 <main>
 
@@ -239,21 +238,6 @@
     </div>
   </div>
 </footer>
-
-<!-- Demo controls -->
-<div id="demo-controls">
-  <details>
-    <summary>Demo controls</summary>
-    <div class="demo-btns">
-      <p>Change DEM status banner:</p>
-      <button onclick="setStatus('normal')"   style="background:#eaf9f9;border:1px solid #ace6e9;color:#0e5f64;">No active storm</button>
-      <button onclick="setStatus('advisory')" style="background:#e5e9f2;border:1px solid #99a8cc;color:#00267f;">Advisory</button>
-      <button onclick="setStatus('watch')"    style="background:#ffe9a8;border:1px solid #e8a833;color:#6b4a00;">Hurricane watch</button>
-      <button onclick="setStatus('warning')"  style="background:#ffc4c4;border:1px solid #a42c2c;color:#a42c2c;">Hurricane warning</button>
-      <button onclick="setStatus('open')"     style="background:#e9f9f3;border:1px solid #1fbf84;color:#00654a;font-weight:700;">Shelters open</button>
-    </div>
-  </details>
-</div>
 
 <script>
 /* ─── Household checklist (opens in new tab) ─── */
