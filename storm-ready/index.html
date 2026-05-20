@@ -10,6 +10,12 @@
     main { flex: 1; }
 
     /* DEM status banner */
+    #dem-banner { border-bottom: 4px solid; transition: background 0.2s, border-color 0.2s, color 0.2s; }
+    #dem-banner[data-status="normal"]   { background: var(--color-teal-10);  border-color: var(--color-teal-40);  color: var(--color-teal-00); }
+    #dem-banner[data-status="advisory"] { background: var(--color-blue-10);  border-color: var(--color-blue-40);  color: var(--color-blue-100); }
+    #dem-banner[data-status="watch"]    { background: #ffe9a8; border-color: var(--color-yellow-00); color: #6b4a00; }
+    #dem-banner[data-status="warning"]  { background: #ffc4c4; border-color: var(--color-red-00);   color: var(--color-red-00); }
+    #dem-banner[data-status="open"]     { background: var(--color-green-10); border-color: var(--color-green-100); color: var(--color-green-00); }
 
     /* Service cards */
     .service-card {
@@ -80,7 +86,37 @@
     .section { margin-top: var(--spacing-l); padding-top: var(--spacing-l); border-top: 2px solid var(--color-grey-00); }
     .section:first-child { margin-top: 0; padding-top: 0; border-top: none; }
 
-    @media print { .no-print { display: none !important; } }
+    /* Storm stat boxes */
+    .storm-stat-btn {
+      padding: var(--spacing-s);
+      border-radius: var(--radius-sm);
+      border: 2px solid transparent;
+      cursor: pointer;
+      text-align: center;
+      background: none;
+      font-family: inherit;
+      transition: outline 0.1s;
+      width: 100%;
+    }
+    .storm-stat-btn:focus-visible { outline: 4px solid var(--color-teal-100); }
+    .storm-stat-btn--named     { background: var(--color-teal-10); }
+    .storm-stat-btn--named:hover  { outline: 2px solid var(--color-teal-00); }
+    .storm-stat-btn--hurricane { background: #fff9e0; }
+    .storm-stat-btn--hurricane:hover { outline: 2px solid var(--color-yellow-00); }
+    .storm-stat-btn--major     { background: var(--color-red-10); }
+    .storm-stat-btn--major:hover  { outline: 2px solid var(--color-red-00); }
+    .storms-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-s); }
+    @media (max-width: 500px) { .storms-grid { grid-template-columns: 1fr; } }
+
+    /* Demo controls */
+    #demo-controls { position: fixed; top: 1rem; right: 1rem; z-index: 9999; max-width: 220px; }
+    #demo-controls details { background: #fff; border: 2px dashed var(--color-blue-40); border-radius: 6px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+    #demo-controls summary { padding: 0.5rem 0.75rem; font-size: 0.8rem; font-weight: 700; color: var(--color-mid-grey-00); cursor: pointer; list-style: none; display: flex; align-items: center; gap: 6px; }
+    #demo-controls .demo-btns { padding: 0.5rem 0.75rem; border-top: 1px solid var(--color-grey-00); display: flex; flex-direction: column; gap: 6px; }
+    #demo-controls .demo-btns p { font-size: 0.7rem; color: var(--color-mid-grey-00); margin: 0 0 4px; }
+    #demo-controls .demo-btns button { padding: 4px 8px; font-size: 0.78rem; border-radius: 4px; cursor: pointer; text-align: left; font-family: inherit; }
+
+    @media print { #demo-controls { display: none; } }
   </style>
 </head>
 <body>
@@ -106,14 +142,17 @@
   </div>
 </header>
 
-<!-- Alpha banner -->
-<div class="govbb-status-banner govbb-status-banner--alpha" role="status" aria-label="alpha status banner" aria-live="polite">
-  <div class="govbb-container">
-    <p>This page is in <a class="govbb-link govbb-link--secondary" href="/what-we-mean-by-alpha">Alpha</a>.</p>
-  </div>
-</div>
-
 <main>
+
+  <!-- DEM Status Banner -->
+  <div id="dem-banner" data-status="normal" role="status" aria-live="polite">
+    <div class="govbb-container" style="padding-block: var(--spacing-s);">
+      <p style="font-weight: 700; font-size: var(--font-size-body); line-height: 1.3; margin: 0;" id="banner-label">No active storm</p>
+      <p style="font-size: var(--font-size-caption); line-height: 1.5; margin: 4px 0 0;" id="banner-message">There is no hurricane watch or warning in effect for Barbados. Use this time to get prepared.</p>
+      <p id="banner-action" style="margin: 6px 0 0; font-size: var(--font-size-caption);"></p>
+      <p style="font-size: 0.8rem; opacity: 0.7; margin: 4px 0 0;" id="banner-updated">Last updated: 19 May 2026, 9.00am</p>
+    </div>
+  </div>
 
   <div class="govbb-container">
     <div class="page-content">
@@ -124,7 +163,7 @@
           StormReady Barbados
         </h1>
         <p style="font-size: var(--font-size-body); color: var(--color-mid-grey-00); max-width: 600px; line-height: var(--line-height-body); margin-bottom: var(--spacing-m);">
-          Get ready for hurricane season and stay up to date with Department of Emergency Management (DEM) storm alerts.
+          Find your nearest emergency shelter, get ready for hurricane season, and stay up to date with Department of Emergency Management (DEM) storm alerts.
         </p>
         <div style="padding: var(--spacing-s); background: var(--color-blue-10); border-left: 4px solid var(--color-blue-40); border-radius: var(--radius-sm);">
           <p style="font-size: var(--font-size-body); line-height: var(--line-height-body); margin: 0;">
@@ -133,44 +172,22 @@
         </div>
       </div>
 
-      <!-- Household checklist -->
-      <section class="section" aria-labelledby="checklist-heading">
-        <h2 id="checklist-heading" style="font-size: var(--font-size-h2); font-weight: var(--font-weight-bold); line-height: var(--line-height-h2); margin-bottom: var(--spacing-s);">Household checklist</h2>
-        <p style="font-size: var(--font-size-body); line-height: var(--line-height-body); max-width: 600px; margin-bottom: var(--spacing-m);">
-          Use this checklist to make sure your household is ready. It covers water, food, documents, first aid, communication, and what to do before the storm hits.
-        </p>
-        <div class="no-print">
-          <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-s); align-items: center;">
-            <button type="button" onclick="openChecklist(false)" class="govbb-btn">
-              Open household checklist
-            </button>
-            <button type="button" onclick="openChecklist(true)" class="govbb-btn--secondary">
-              Save checklist as PDF
-            </button>
-          </div>
-          <p style="font-size: var(--font-size-caption); color: var(--color-mid-grey-00); margin: var(--spacing-xs) 0 0;">
-            The checklist opens in a new tab where you can tick items off. "Save as PDF" opens it and prompts your browser to save a PDF copy.
-          </p>
+      <!-- Service cards -->
+      <div class="section">
+        <h2 style="font-size: var(--font-size-h2); font-weight: var(--font-weight-bold); line-height: var(--line-height-h2); margin-bottom: var(--spacing-s);">Services</h2>
+        <div class="grid-2">
+          <a href="prepare/" class="service-card">
+            <p class="service-card__heading">Get ready</p>
+            <p class="service-card__desc">Download the household checklist. See the 2026 storm forecast and official storm names for this season.</p>
+            <p class="service-card__arrow">Get ready →</p>
+          </a>
+          <a href="shelters/" class="service-card">
+            <p class="service-card__heading">Find a shelter</p>
+            <p class="service-card__desc">Search for a Category 1 emergency shelter near you. Filter by parish or wheelchair access. See which shelters are open.</p>
+            <p class="service-card__arrow">Find a shelter →</p>
+          </a>
         </div>
-        <div style="margin-top: var(--spacing-m); display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-s);">
-          <div style="padding: var(--spacing-s); background: var(--color-teal-10); border-radius: var(--radius-sm);">
-            <h3 style="font-size: var(--font-size-h4); font-weight: var(--font-weight-bold); margin-bottom: var(--spacing-xs);">Water</h3>
-            <p style="font-size: var(--font-size-caption); line-height: var(--line-height-body);">Store at least 3 gallons of drinking water per person for 3 days. Fill your bath and buckets before the storm hits.</p>
-          </div>
-          <div style="padding: var(--spacing-s); background: var(--color-yellow-10); border-radius: var(--radius-sm);">
-            <h3 style="font-size: var(--font-size-h4); font-weight: var(--font-weight-bold); margin-bottom: var(--spacing-xs);">Documents</h3>
-            <p style="font-size: var(--font-size-caption); line-height: var(--line-height-body);">Keep your national ID, insurance papers, and birth certificates in a waterproof bag. Have cash in small bills ready.</p>
-          </div>
-          <div style="padding: var(--spacing-s); background: var(--color-blue-10); border-radius: var(--radius-sm);">
-            <h3 style="font-size: var(--font-size-h4); font-weight: var(--font-weight-bold); margin-bottom: var(--spacing-xs);">Communication</h3>
-            <p style="font-size: var(--font-size-caption); line-height: var(--line-height-body);">Charge all devices and a power bank. Have a battery radio to hear DEM updates. Write your emergency contacts on paper.</p>
-          </div>
-          <div style="padding: var(--spacing-s); background: var(--color-red-10); border-radius: var(--radius-sm);">
-            <h3 style="font-size: var(--font-size-h4); font-weight: var(--font-weight-bold); margin-bottom: var(--spacing-xs);">Before it hits</h3>
-            <p style="font-size: var(--font-size-caption); line-height: var(--line-height-body);">Board up windows, bring in outdoor items, top up your vehicle with petrol, and let family know your shelter plan.</p>
-          </div>
-        </div>
-      </section>
+      </div>
 
       <!-- Key contacts -->
       <section class="section" aria-labelledby="contacts-heading">
@@ -197,6 +214,42 @@
         </div>
       </section>
 
+      <!-- 2026 Atlantic hurricane season -->
+      <section class="section" aria-labelledby="season-heading">
+        <h2 id="season-heading" style="font-size: var(--font-size-h2); font-weight: var(--font-weight-bold); line-height: var(--line-height-h2); margin-bottom: var(--spacing-s);">2026 Atlantic hurricane season</h2>
+        <p style="font-size: var(--font-size-body); color: var(--color-mid-grey-00); max-width: 640px; line-height: var(--line-height-body); margin-bottom: var(--spacing-m);">
+          Names are set by the World Meteorological Organisation and confirmed by the Barbados Meteorological Services.
+        </p>
+
+        <!-- Melissa retired notice -->
+        <div style="padding: var(--spacing-s); background: #fff9e0; border-left: 4px solid var(--color-yellow-00); border-radius: var(--radius-sm); margin-bottom: var(--spacing-m);">
+          <p style="font-size: var(--font-size-caption); line-height: var(--line-height-body); margin: 0;">
+            <strong>Hurricane Melissa (2025)</strong> — a Category 5 storm that affected more than 626,000 people in Jamaica, causing an estimated US$8–15 billion in damage. The name Melissa has been retired and will be replaced in the 2031 cycle. The 2026 list is in use for the first time.
+          </p>
+        </div>
+
+        <!-- Storm stat boxes -->
+        <div style="border: 2px solid var(--color-grey-00); border-radius: var(--radius-sm); padding: var(--spacing-s);">
+          <h3 style="font-size: var(--font-size-h4); font-weight: var(--font-weight-bold); margin-bottom: var(--spacing-xs);">2026 season forecast</h3>
+          <p style="font-size: 0.875rem; color: var(--color-mid-grey-00); margin-bottom: var(--spacing-s);">Click a box to see more detail.</p>
+          <div class="storms-grid">
+            <button type="button" class="storm-stat-btn storm-stat-btn--named" onclick="showStormList('named')">
+              <p id="named-count" style="font-size: var(--font-size-h2); font-weight: var(--font-weight-bold); color: var(--color-teal-00); margin: 0;">21</p>
+              <p style="font-size: 0.875rem; color: var(--color-mid-grey-00); margin: 0;">Named storms</p>
+            </button>
+            <button type="button" class="storm-stat-btn storm-stat-btn--hurricane" onclick="showStormList('hurricane')">
+              <p style="font-size: var(--font-size-h2); font-weight: var(--font-weight-bold); color: #a07000; margin: 0;">9</p>
+              <p style="font-size: 0.875rem; color: var(--color-mid-grey-00); margin: 0;">Hurricanes</p>
+            </button>
+            <button type="button" class="storm-stat-btn storm-stat-btn--major" onclick="showStormList('major')">
+              <p style="font-size: var(--font-size-h2); font-weight: var(--font-weight-bold); color: var(--color-red-00); margin: 0;">4</p>
+              <p style="font-size: 0.875rem; color: var(--color-mid-grey-00); margin: 0;">Major (Cat 3+)</p>
+            </button>
+          </div>
+          <div id="storm-detail" style="display:none; margin-top: var(--spacing-s); padding-top: var(--spacing-s); border-top: 1px solid var(--color-grey-00);"></div>
+          <p style="font-size: 0.875rem; color: var(--color-mid-grey-00); margin-top: var(--spacing-s);">Source: Barbados Meteorological Services, April 2026 seasonal outlook. Above-normal season expected.</p>
+        </div>
+      </section>
 
     </div>
   </div>
@@ -223,65 +276,101 @@
   </div>
 </footer>
 
+<!-- Demo controls -->
+<div id="demo-controls">
+  <details>
+    <summary>Demo controls</summary>
+    <div class="demo-btns">
+      <p>Change DEM status banner:</p>
+      <button onclick="setStatus('normal')"   style="background:#eaf9f9;border:1px solid #ace6e9;color:#0e5f64;">No active storm</button>
+      <button onclick="setStatus('advisory')" style="background:#e5e9f2;border:1px solid #99a8cc;color:#00267f;">Advisory</button>
+      <button onclick="setStatus('watch')"    style="background:#ffe9a8;border:1px solid #e8a833;color:#6b4a00;">Hurricane watch</button>
+      <button onclick="setStatus('warning')"  style="background:#ffc4c4;border:1px solid #a42c2c;color:#a42c2c;">Hurricane warning</button>
+      <button onclick="setStatus('open')"     style="background:#e9f9f3;border:1px solid #1fbf84;color:#00654a;font-weight:700;">Shelters open</button>
+    </div>
+  </details>
+</div>
+
 <script>
-/* ─── Household checklist (opens in new tab) ─── */
-function openChecklist(autoPrint) {
-  var win = window.open('', '_blank');
-  var cl = function(id, text) {
-    return '<div class="cl-item" style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid #e0e4e9;">' +
-      '<input type="checkbox" id="' + id + '" onchange="updateProgress()" style="margin-top:3px;width:18px;height:18px;flex-shrink:0;cursor:pointer;" />' +
-      '<label for="' + id + '" style="font-size:1.125rem;line-height:1.4;cursor:pointer;">' + text + '</label>' +
-    '</div>';
-  };
-  var section = function(title, items) {
-    return '<div style="margin-bottom:2rem;">' +
-      '<h3 style="font-weight:700;font-size:1.375rem;margin:0 0 0.75rem;">' + title + '</h3>' +
-      items +
-    '</div>';
-  };
-  var html = '<!DOCTYPE html><html lang="en"><head>' +
-    '<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">' +
-    '<title>Household Preparation Checklist – StormReady Barbados</title>' +
-    '<link rel="preconnect" href="https://fonts.googleapis.com">' +
-    '<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">' +
-    '<style>' +
-      '*{box-sizing:border-box;margin:0;padding:0;}' +
-      'body{font-family:Figtree,-apple-system,sans-serif;font-size:1.125rem;line-height:1.5;color:#000;background:#fff;-webkit-font-smoothing:antialiased;}' +
-      '.container{max-width:800px;margin:0 auto;padding:0 16px;}' +
-      '.cl-item input:checked+label{text-decoration:line-through;color:#595959;}' +
-      '@media print{.no-print{display:none!important}body{font-size:11pt}}' +
-    '</style>' +
-    (autoPrint ? '<script>window.addEventListener("load",function(){setTimeout(function(){window.print();},800);});<\/script>' : '') +
-  '</head><body>' +
-    '<div style="background:#00267f;color:#fff;padding:8px 0;"><div class="container" style="font-size:0.875rem;">Official government website</div></div>' +
-    '<div style="background:#ffc726;padding:12px 0;"><div class="container"><strong style="font-size:1.125rem;">Government of Barbados</strong></div></div>' +
-    '<main><div class="container" style="padding-top:2.5rem;padding-bottom:4rem;">' +
-      '<a onclick="window.close();return false;" href="#" style="display:inline-flex;align-items:center;gap:6px;color:#0e5f64;text-decoration:underline;text-underline-offset:2px;font-size:1rem;margin-bottom:1.5rem;">← Back to StormReady Barbados</a>' +
-      '<h1 style="font-weight:700;font-size:2.5rem;line-height:1.15;margin-bottom:0.5rem;">Household preparation checklist</h1>' +
-      '<p style="color:#595959;font-size:1.125rem;margin-bottom:1.5rem;">Tick items as you get ready. Save as PDF or print to keep a copy at home.</p>' +
-      '<div class="no-print" style="display:flex;gap:12px;margin-bottom:2rem;">' +
-        '<button onclick="resetChecklist()" style="padding:8px 16px;border:2px solid #e0e4e9;border-radius:4px;font-size:1rem;font-family:inherit;cursor:pointer;background:#fff;">Reset</button>' +
-        '<button onclick="window.print()" style="padding:8px 16px;border:2px solid #000;border-radius:4px;font-size:1rem;font-family:inherit;cursor:pointer;background:#fff;">Save as PDF</button>' +
+var STORMS = [
+  { name:'Andrea' }, { name:'Barry' },    { name:'Chantal' }, { name:'Dean' },
+  { name:'Erin' },   { name:'Felix' },    { name:'Gabrielle'},{ name:'Harold' },
+  { name:'Ingrid' }, { name:'Jerry' },    { name:'Karen' },   { name:'Lorenzo' },
+  { name:'Melissa', retired:true },       { name:'Nestor' },  { name:'Olga' },
+  { name:'Pablo' },  { name:'Rebekah' },  { name:'Sebastien'},{ name:'Tanya' },
+  { name:'Van' },    { name:'Wendy' },
+];
+
+/* Keep the tile count in sync with the array at runtime */
+document.getElementById('named-count').textContent = STORMS.length;
+
+function showStormList(type) {
+  var detail = document.getElementById('storm-detail');
+  var activeType = detail.getAttribute('data-type');
+  if (activeType === type && detail.style.display !== 'none') {
+    detail.style.display = 'none';
+    detail.setAttribute('data-type', '');
+    return;
+  }
+  detail.setAttribute('data-type', type);
+  if (type === 'named') {
+    detail.innerHTML =
+      '<p style="font-weight:700;font-size:1.125rem;margin:0 0 0.875rem;color:#0e5f64;">Official 2026 storm names (' + STORMS.length + ')</p>' +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:0.5rem;">' +
+      STORMS.map(function(s) {
+        var border = s.retired ? '#ffc4c4' : '#e0e4e9';
+        var bg     = s.retired ? '#fff0f0' : '#f8f9fa';
+        var badge  = s.retired ? '<span style="display:block;font-size:0.7rem;color:#a42c2c;font-weight:600;margin-top:2px;">Retired name</span>' : '';
+        return '<div style="padding:0.625rem 0.75rem;border-radius:4px;border:1.5px solid ' + border + ';background:' + bg + ';text-align:center;">' +
+          '<p style="font-weight:700;font-size:0.9375rem;margin:0;">' + s.name + '</p>' + badge +
+        '</div>';
+      }).join('') +
       '</div>' +
-      '<div style="margin-bottom:2rem;padding:1rem;background:#eaf9f9;border:1px solid #ace6e9;border-radius:4px;">' +
-        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><span style="font-weight:700;color:#0e5f64;">Your progress</span><span id="progress-text" style="font-weight:700;color:#0e5f64;">0 of 38 items</span></div>' +
-        '<div style="background:#ace6e9;border-radius:999px;height:10px;"><div id="progress-bar" style="background:#0e5f64;height:10px;border-radius:999px;width:0%;transition:width 0.2s;"></div></div>' +
-      '</div>' +
-      section('Water',[cl('cl1','At least 3 gallons of drinking water per person, for 3 days'),cl('cl2','1 gallon of water per pet per day'),cl('cl3','Filled bathtubs and large buckets before the storm (BWA advice)'),cl('cl4','Water purification tablets or bleach (for emergencies)')].join(''))+
-      '<p style="font-size:0.875rem;color:#595959;font-style:italic;margin-top:-1.25rem;margin-bottom:2rem;">After the storm: do not drink tap water until BWA says it is safe. Boil all drinking water for at least 1 minute.</p>'+
-      section('Food',[cl('cl5','At least 3 days of non-perishable food (tinned goods, dry crackers, peanut butter)'),cl('cl6','Manual can opener'),cl('cl7','Disposable plates, cups, and forks'),cl('cl8','Baby formula and food (if you have an infant)')].join(''))+
-      section('Important documents',['<p style="font-size:1rem;color:#595959;margin-bottom:0.75rem;">Keep these in a waterproof bag or container.</p>',cl('cl9','National ID card or passport'),cl('cl10','Insurance documents (home, health, vehicle)'),cl('cl11','Birth certificates for everyone in your household'),cl('cl12','Prescription details and medical records'),cl('cl13','Cash in small bills (ATMs may not work after the storm)')].join(''))+
-      section('Health and first aid',[cl('cl14','First aid kit (plasters, bandages, antiseptic)'),cl('cl15','7-day supply of prescription medicines'),cl('cl16','Hearing aids with spare batteries'),cl('cl17','Glasses or contact lenses with enough solution'),cl('cl18','Nappies, wipes, and formula (if you have a baby)'),cl('cl19','Hand sanitiser and face masks')].join(''))+
-      section('Communication',[cl('cl20','Battery-powered or wind-up radio (to hear DEM updates)'),cl('cl21','Fully charged mobile phone and portable power bank'),cl('cl22','Emergency contact list written on paper (not just on your phone)'),cl('cl23','Whistle to signal for help if you get trapped')].join(''))+
-      section('Shelter, tools, and safety',[cl('cl24','Torches with spare batteries'),cl('cl25','Candles and waterproof matches or a lighter'),cl('cl26','Sturdy shoes or boots for every family member'),cl('cl27','Rain gear (waterproof jackets or ponchos)'),cl('cl28','Bedding or sleeping bag for each person'),cl('cl29','Change of clothes for 3 days'),cl('cl30','Tools to turn off gas and water at the mains'),cl('cl31','Heavy-duty rubbish bags')].join(''))+
-      section('Before the storm hits',[cl('cl32','Board up or shutter windows and glass doors'),cl('cl33','Bring in outdoor furniture, plants, and loose items'),cl('cl34','Topped up vehicle with petrol'),cl('cl35','Charged all devices (phones, tablets, power banks)'),cl('cl36','Let friends or family know your shelter plan'),cl('cl37','Arranged help for any elderly or disabled neighbours'),cl('cl38','Made a plan for your pets')].join(''))+
-    '</div></main>' +
-    '<script>function updateProgress(){var total=38,checked=document.querySelectorAll(".cl-item input:checked").length;document.getElementById("progress-text").textContent=checked+" of "+total+" items";document.getElementById("progress-bar").style.width=Math.round(checked/total*100)+"%";}function resetChecklist(){document.querySelectorAll(".cl-item input").forEach(function(c){c.checked=false;});updateProgress();}<\/script>' +
-  '</body></html>';
-  win.document.write(html);
-  win.document.close();
+      '<p style="font-size:0.8rem;color:#595959;margin:0.75rem 0 0;">Names are pre-assigned by the World Meteorological Organisation before the season begins.</p>';
+  } else {
+    var isHurricane = type === 'hurricane';
+    var count = isHurricane ? '9' : '4';
+    var label = isHurricane ? 'hurricanes' : 'major hurricanes (Category 3+)';
+    var color = isHurricane ? '#e8a833' : '#a42c2c';
+    detail.innerHTML =
+      '<p style="font-weight:700;font-size:1.125rem;margin:0 0 0.5rem;color:' + color + ';">Forecast: ' + count + ' ' + label + '</p>' +
+      '<p style="font-size:1rem;color:#595959;line-height:1.5;max-width:560px;">' +
+        'Storm names are assigned in order as each tropical storm forms during the season. ' +
+        'We cannot know in advance which names will reach hurricane or major hurricane strength — ' +
+        'only that the seasonal forecast expects ' + count + ' to do so.' +
+      '</p>';
+  }
+  detail.style.display = 'block';
 }
 
+var STATUS_CONFIG = {
+  normal:   { label:'No active storm',                       message:'There is no hurricane watch or warning in effect for Barbados. Use this time to get prepared.', action: '' },
+  advisory: { label:'Tropical storm advisory',               message:'A tropical storm advisory is in effect. Monitor updates from DEM and Barbados Meteorological Services.', action: '' },
+  watch:    { label:'Hurricane watch',                       message:'A hurricane watch is in effect. A hurricane is possible within 48 hours. Prepare to shelter. Wait for DEM to say shelters are open before you go.', action: '' },
+  warning:  { label:'Hurricane warning',                     message:'A hurricane warning is in effect. A hurricane is expected within 36 hours. Complete your preparations now. Wait for DEM to open shelters.', action: '' },
+  open:     { label:'Shelters are OPEN — seek shelter now',  message:"DEM has opened Category 1 shelters. If you're in danger, go to your nearest shelter now.", action: '<a href="shelters/" style="color:inherit;font-weight:700;text-decoration:underline;text-underline-offset:2px;">Find your nearest open shelter →</a>' },
+};
+
+function setStatus(status) {
+  var cfg = STATUS_CONFIG[status] || STATUS_CONFIG.normal;
+  var banner = document.getElementById('dem-banner');
+  banner.setAttribute('data-status', status);
+  document.getElementById('banner-label').textContent   = cfg.label;
+  document.getElementById('banner-message').textContent = cfg.message;
+  document.getElementById('banner-action').innerHTML    = cfg.action;
+  var now  = new Date();
+  var time = now.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+  var date = now.toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+  document.getElementById('banner-updated').textContent = 'Last updated: ' + date + ', ' + time;
+  try { localStorage.setItem('dem-status', status); } catch(e) {}
+}
+
+(function() {
+  try {
+    var saved = localStorage.getItem('dem-status');
+    if (saved && STATUS_CONFIG[saved]) setStatus(saved);
+  } catch(e) {}
+})();
 </script>
 </body>
 </html>
