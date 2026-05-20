@@ -79,7 +79,10 @@
       .grid-4 { grid-template-columns: 1fr 1fr; }
     }
 
-    .page-content { max-width: 900px; margin: 0 auto; padding: var(--spacing-l) var(--spacing-s); }
+    .page-content { max-width: 900px; margin: 0 auto; padding: var(--spacing-l) 0; }
+    @media (max-width: 768px) {
+      .page-content { padding-left: 1rem; padding-right: 1rem; }
+    }
     .section { margin-top: var(--spacing-l); padding-top: var(--spacing-l); border-top: 2px solid var(--color-grey-00); }
     .section:first-child { margin-top: 0; padding-top: 0; border-top: none; }
 
@@ -152,7 +155,7 @@
   </div>
 
   <div class="govbb-container">
-    <div class="page-content" style="padding-left:0; padding-right:0;">
+    <div class="page-content">
 
       <!-- Page header -->
       <div class="section">
