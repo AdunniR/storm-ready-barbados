@@ -183,8 +183,7 @@
           </a>
         </div>
         <p style="margin-top: var(--spacing-m); font-size: var(--font-size-caption); color: var(--color-mid-grey-00);">
-          Shelters only open when DEM activates them during an active hurricane event.
-          <a href="shelters/" class="govbb-link" style="white-space: nowrap;">View shelter locations →</a>
+          Shelters only open when DEM activates them during an active hurricane event. DEM will announce when and where shelters are open.
         </p>
       </div>
 
@@ -347,7 +346,7 @@ var STATUS_CONFIG = {
   advisory: { label:'Tropical storm advisory',               message:'A tropical storm advisory is in effect. Monitor updates from DEM and Barbados Meteorological Services.', action: '' },
   watch:    { label:'Hurricane watch',                       message:'A hurricane watch is in effect. A hurricane is possible within 48 hours. Prepare to shelter. Wait for DEM to say shelters are open before you go.', action: '' },
   warning:  { label:'Hurricane warning',                     message:'A hurricane warning is in effect. A hurricane is expected within 36 hours. Complete your preparations now. Wait for DEM to open shelters.', action: '' },
-  open:     { label:'Shelters are OPEN — seek shelter now',  message:"DEM has opened Category 1 shelters. If you're in danger, go to your nearest shelter now.", action: '<a href="shelters/" style="color:inherit;font-weight:700;text-decoration:underline;text-underline-offset:2px;">Find your nearest open shelter →</a>' },
+  open:     { label:'Shelters are OPEN — seek shelter now',  message:"DEM has opened Category 1 shelters. If you're in danger, go to your nearest shelter now. Listen to DEM announcements for which shelters are open.", action: '' },
 };
 
 function setStatus(status) {
