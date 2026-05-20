@@ -81,6 +81,28 @@
     .section { margin-top: var(--spacing-l); padding-top: var(--spacing-l); border-top: 2px solid var(--color-grey-00); }
     .section:first-child { margin-top: 0; padding-top: 0; border-top: none; }
 
+    /* Storm stat boxes */
+    .storm-stat-btn {
+      padding: var(--spacing-s);
+      border-radius: var(--radius-sm);
+      border: 2px solid transparent;
+      cursor: pointer;
+      text-align: center;
+      background: none;
+      font-family: inherit;
+      transition: outline 0.1s;
+      width: 100%;
+    }
+    .storm-stat-btn:focus-visible { outline: 4px solid var(--color-teal-100); }
+    .storm-stat-btn--named     { background: var(--color-teal-10); }
+    .storm-stat-btn--named:hover  { outline: 2px solid var(--color-teal-00); }
+    .storm-stat-btn--hurricane { background: #fff9e0; }
+    .storm-stat-btn--hurricane:hover { outline: 2px solid var(--color-yellow-00); }
+    .storm-stat-btn--major     { background: var(--color-red-10); }
+    .storm-stat-btn--major:hover  { outline: 2px solid var(--color-red-00); }
+    .storms-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-s); }
+    @media (max-width: 500px) { .storms-grid { grid-template-columns: 1fr; } }
+
     /* Demo controls */
     #demo-controls {
       position: fixed; top: 1rem; right: 1rem; z-index: 9999; max-width: 220px;
@@ -222,6 +244,43 @@
         </div>
       </section>
 
+      <!-- 2026 Atlantic hurricane season -->
+      <section class="section" aria-labelledby="season-heading">
+        <h2 id="season-heading" style="font-size: var(--font-size-h2); font-weight: var(--font-weight-bold); line-height: var(--line-height-h2); margin-bottom: var(--spacing-s);">2026 Atlantic hurricane season</h2>
+        <p style="font-size: var(--font-size-body); color: var(--color-mid-grey-00); max-width: 640px; line-height: var(--line-height-body); margin-bottom: var(--spacing-m);">
+          Names are set by the World Meteorological Organisation and confirmed by the Barbados Meteorological Services.
+        </p>
+
+        <!-- Melissa retired notice -->
+        <div style="padding: var(--spacing-s); background: #fff9e0; border-left: 4px solid var(--color-yellow-00); border-radius: var(--radius-sm); margin-bottom: var(--spacing-m);">
+          <p style="font-size: var(--font-size-caption); line-height: var(--line-height-body); margin: 0;">
+            <strong>Hurricane Melissa (2025)</strong> — a Category 5 storm that affected more than 626,000 people in Jamaica, causing an estimated US$8–15 billion in damage. The name Melissa has been retired and will be replaced in the 2031 cycle. The 2026 list is in use for the first time.
+          </p>
+        </div>
+
+        <!-- Storm stat boxes -->
+        <div style="border: 2px solid var(--color-grey-00); border-radius: var(--radius-sm); padding: var(--spacing-s);">
+          <h3 style="font-size: var(--font-size-h4); font-weight: var(--font-weight-bold); margin-bottom: var(--spacing-xs);">2026 season forecast</h3>
+          <p style="font-size: 0.875rem; color: var(--color-mid-grey-00); margin-bottom: var(--spacing-s);">Click a box to see more detail.</p>
+          <div class="storms-grid">
+            <button type="button" class="storm-stat-btn storm-stat-btn--named" onclick="showStormList('named')">
+              <p style="font-size: var(--font-size-h2); font-weight: var(--font-weight-bold); color: var(--color-teal-00); margin: 0;">19</p>
+              <p style="font-size: 0.875rem; color: var(--color-mid-grey-00); margin: 0;">Named storms</p>
+            </button>
+            <button type="button" class="storm-stat-btn storm-stat-btn--hurricane" onclick="showStormList('hurricane')">
+              <p style="font-size: var(--font-size-h2); font-weight: var(--font-weight-bold); color: var(--color-yellow-00); margin: 0;">9</p>
+              <p style="font-size: 0.875rem; color: var(--color-mid-grey-00); margin: 0;">Hurricanes</p>
+            </button>
+            <button type="button" class="storm-stat-btn storm-stat-btn--major" onclick="showStormList('major')">
+              <p style="font-size: var(--font-size-h2); font-weight: var(--font-weight-bold); color: var(--color-red-00); margin: 0;">4</p>
+              <p style="font-size: 0.875rem; color: var(--color-mid-grey-00); margin: 0;">Major (Cat 3+)</p>
+            </button>
+          </div>
+          <div id="storm-detail" style="display:none; margin-top: var(--spacing-s); padding-top: var(--spacing-s); border-top: 1px solid var(--color-grey-00);"></div>
+          <p style="font-size: 0.875rem; color: var(--color-mid-grey-00); margin-top: var(--spacing-s);">Source: Barbados Meteorological Services, April 2026 seasonal outlook. Above-normal season expected.</p>
+        </div>
+      </section>
+
     </div>
   </div>
 
@@ -263,6 +322,54 @@
 </div>
 
 <script>
+var STORMS = [
+  { name:'Andrea' }, { name:'Barry' },    { name:'Chantal' }, { name:'Dean' },
+  { name:'Erin' },   { name:'Felix' },    { name:'Gabrielle'},{ name:'Harold' },
+  { name:'Ingrid' }, { name:'Jerry' },    { name:'Karen' },   { name:'Lorenzo' },
+  { name:'Melissa', retired:true },       { name:'Nestor' },  { name:'Olga' },
+  { name:'Pablo' },  { name:'Rebekah' },  { name:'Sebastien'},{ name:'Tanya' },
+  { name:'Van' },    { name:'Wendy' },
+];
+
+function showStormList(type) {
+  var detail = document.getElementById('storm-detail');
+  var activeType = detail.getAttribute('data-type');
+  if (activeType === type && detail.style.display !== 'none') {
+    detail.style.display = 'none';
+    detail.setAttribute('data-type', '');
+    return;
+  }
+  detail.setAttribute('data-type', type);
+  if (type === 'named') {
+    detail.innerHTML =
+      '<p style="font-weight:700;font-size:1.125rem;margin:0 0 0.875rem;color:#0e5f64;">Official 2026 storm names (' + STORMS.length + ')</p>' +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:0.5rem;">' +
+      STORMS.map(function(s) {
+        var border = s.retired ? '#ffc4c4' : '#e0e4e9';
+        var bg     = s.retired ? '#fff0f0' : '#f8f9fa';
+        var badge  = s.retired ? '<span style="display:block;font-size:0.7rem;color:#a42c2c;font-weight:600;margin-top:2px;">Retired name</span>' : '';
+        return '<div style="padding:0.625rem 0.75rem;border-radius:4px;border:1.5px solid ' + border + ';background:' + bg + ';text-align:center;">' +
+          '<p style="font-weight:700;font-size:0.9375rem;margin:0;">' + s.name + '</p>' + badge +
+        '</div>';
+      }).join('') +
+      '</div>' +
+      '<p style="font-size:0.8rem;color:#595959;margin:0.75rem 0 0;">Names are pre-assigned by the World Meteorological Organisation before the season begins.</p>';
+  } else {
+    var isHurricane = type === 'hurricane';
+    var count = isHurricane ? '9' : '4';
+    var label = isHurricane ? 'hurricanes' : 'major hurricanes (Category 3+)';
+    var color = isHurricane ? '#e8a833' : '#a42c2c';
+    detail.innerHTML =
+      '<p style="font-weight:700;font-size:1.125rem;margin:0 0 0.5rem;color:' + color + ';">Forecast: ' + count + ' ' + label + '</p>' +
+      '<p style="font-size:1rem;color:#595959;line-height:1.5;max-width:560px;">' +
+        'Storm names are assigned in order as each tropical storm forms during the season. ' +
+        'We cannot know in advance which names will reach hurricane or major hurricane strength — ' +
+        'only that the seasonal forecast expects ' + count + ' to do so.' +
+      '</p>';
+  }
+  detail.style.display = 'block';
+}
+
 var STATUS_CONFIG = {
   normal:   { label:'No active storm',                       message:'There is no hurricane watch or warning in effect for Barbados. Use this time to get prepared.' },
   advisory: { label:'Tropical storm advisory',               message:'A tropical storm advisory is in effect. Monitor updates from DEM and Barbados Meteorological Services.' },
