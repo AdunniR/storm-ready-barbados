@@ -141,11 +141,11 @@
         </p>
         <div class="no-print">
           <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-s); align-items: center;">
-            <a href="checklist/" class="govbb-btn" style="text-decoration: none;">Open household checklist</a>
-            <a href="checklist/?print" class="govbb-btn--secondary" style="text-decoration: none;">Save checklist as PDF</a>
+            <button type="button" onclick="openChecklist(false)" class="govbb-btn">Open household checklist</button>
+            <button type="button" onclick="openChecklist(true)" class="govbb-btn--secondary">Save checklist as PDF</button>
           </div>
           <p style="font-size: var(--font-size-caption); color: var(--color-mid-grey-00); margin: var(--spacing-xs) 0 0;">
-            The checklist opens in a new page where you can tick items off. "Save as PDF" opens it and prompts your browser to save a PDF copy.
+            The checklist opens in a new tab where you can tick items off. "Save as PDF" opens it and prompts your browser to save a PDF copy.
           </p>
         </div>
         <div style="margin-top: var(--spacing-m); display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-s);">
@@ -219,5 +219,134 @@
   </div>
 </footer>
 
+<script>
+function openChecklist(autoPrint) {
+  var cl = function(id, text) {
+    return '<div class="cl-item">' +
+      '<input type="checkbox" id="' + id + '" onchange="updateProgress()">' +
+      '<label for="' + id + '">' + text + '</label>' +
+    '</div>';
+  };
+  var sec = function(title, body) {
+    return '<div class="cl-section"><h2>' + title + '</h2>' + body + '</div>';
+  };
+
+  var items =
+    sec('Water',
+      cl('c1','At least 3 gallons of drinking water per person, for 3 days') +
+      cl('c2','1 gallon of water per pet per day') +
+      cl('c3','Filled bathtubs and large buckets before the storm (BWA advice)') +
+      cl('c4','Water purification tablets or bleach (for emergencies)') +
+      '<p class="note">After the storm: do not drink tap water until BWA says it is safe. Boil all drinking water for at least 1 minute.</p>') +
+    sec('Food',
+      cl('c5','At least 3 days of non-perishable food (tinned goods, dry crackers, peanut butter)') +
+      cl('c6','Manual can opener') +
+      cl('c7','Disposable plates, cups, and forks') +
+      cl('c8','Baby formula and food (if you have an infant)')) +
+    sec('Important documents',
+      '<p class="note" style="margin-top:0">Keep these in a waterproof bag or container.</p>' +
+      cl('c9','National ID card or passport') +
+      cl('c10','Insurance documents (home, health, vehicle)') +
+      cl('c11','Birth certificates for everyone in your household') +
+      cl('c12','Prescription details and medical records') +
+      cl('c13','Cash in small bills (ATMs may not work after the storm)')) +
+    sec('Health and first aid',
+      cl('c14','First aid kit (plasters, bandages, antiseptic)') +
+      cl('c15','7-day supply of prescription medicines') +
+      cl('c16','Hearing aids with spare batteries') +
+      cl('c17','Glasses or contact lenses with enough solution') +
+      cl('c18','Nappies, wipes, and formula (if you have a baby)') +
+      cl('c19','Hand sanitiser and face masks')) +
+    sec('Communication',
+      cl('c20','Battery-powered or wind-up radio (to hear DEM updates)') +
+      cl('c21','Fully charged mobile phone and portable power bank') +
+      cl('c22','Emergency contact list written on paper (not just on your phone)') +
+      cl('c23','Whistle to signal for help if you get trapped')) +
+    sec('Shelter, tools, and safety',
+      cl('c24','Torches with spare batteries') +
+      cl('c25','Candles and waterproof matches or a lighter') +
+      cl('c26','Sturdy shoes or boots for every family member') +
+      cl('c27','Rain gear (waterproof jackets or ponchos)') +
+      cl('c28','Bedding or sleeping bag for each person') +
+      cl('c29','Change of clothes for 3 days') +
+      cl('c30','Tools to turn off gas and water at the mains') +
+      cl('c31','Heavy-duty rubbish bags')) +
+    sec('Before the storm hits',
+      cl('c32','Board up or shutter windows and glass doors') +
+      cl('c33','Bring in outdoor furniture, plants, and loose items') +
+      cl('c34','Topped up vehicle with petrol') +
+      cl('c35','Charged all devices (phones, tablets, power banks)') +
+      cl('c36','Let friends or family know your shelter plan') +
+      cl('c37','Arranged help for any elderly or disabled neighbours') +
+      cl('c38','Made a plan for your pets'));
+
+  var printScript = autoPrint
+    ? '<scr' + 'ipt>window.addEventListener("load",function(){setTimeout(window.print,500);});<\/scr' + 'ipt>'
+    : '';
+
+  var html = '<!DOCTYPE html><html lang="en"><head>' +
+    '<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">' +
+    '<title>Household preparation checklist – StormReady Barbados</title>' +
+    '<link rel="preconnect" href="https://fonts.googleapis.com">' +
+    '<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">' +
+    '<style>' +
+      '*{box-sizing:border-box;margin:0;padding:0}' +
+      'body{font-family:Figtree,sans-serif;font-size:1.125rem;line-height:1.5;color:#000;background:#fff;-webkit-font-smoothing:antialiased}' +
+      '.wrap{max-width:800px;margin:0 auto;padding:0 1rem}' +
+      '.top-bar{background:#00267f;color:#fff;padding:8px 0;font-size:.875rem}' +
+      '.header{background:#ffc726;padding:12px 0;font-size:1.125rem;font-weight:700}' +
+      '.content{padding:2.5rem 0 4rem}' +
+      '.progress-box{padding:1rem;background:#eaf9f9;border:1px solid #ace6e9;border-radius:4px;margin-bottom:2rem}' +
+      '.progress-top{display:flex;justify-content:space-between;font-weight:700;color:#0e5f64;margin-bottom:8px}' +
+      '.progress-track{background:#ace6e9;border-radius:999px;height:10px}' +
+      '.progress-fill{background:#0e5f64;height:10px;border-radius:999px;width:0%;transition:width .3s}' +
+      '.cl-section{margin-bottom:2rem}' +
+      '.cl-section h2{font-size:1.375rem;font-weight:700;margin-bottom:.75rem;padding-bottom:.5rem;border-bottom:2px solid #e0e4e9}' +
+      '.cl-item{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid #e0e4e9}' +
+      '.cl-item input{margin-top:3px;width:20px;height:20px;flex-shrink:0;cursor:pointer;accent-color:#0e5f64}' +
+      '.cl-item label{font-size:1.125rem;line-height:1.4;cursor:pointer}' +
+      '.cl-item input:checked+label{text-decoration:line-through;color:#595959}' +
+      '.note{font-size:.875rem;color:#595959;font-style:italic;margin:.25rem 0 1rem}' +
+      '.actions{display:flex;gap:12px;margin-bottom:2rem}' +
+      '.btn{padding:10px 20px;border:none;border-radius:4px;font-size:1rem;font-family:inherit;cursor:pointer}' +
+      '.btn-primary{background:#0e5f64;color:#fff}.btn-primary:hover{background:#1a777d}' +
+      '.btn-secondary{background:#fff;border:2px solid #e0e4e9}.btn-secondary:hover{border-color:#0e5f64}' +
+      '@media print{.no-print{display:none!important}body{font-size:11pt}.progress-fill{print-color-adjust:exact;-webkit-print-color-adjust:exact}}' +
+    '</style>' +
+    /* updateProgress defined in head so it exists before any checkbox fires */
+    '<scr' + 'ipt>' +
+      'function updateProgress(){' +
+        'var n=document.querySelectorAll(".cl-item input:checked").length;' +
+        'document.getElementById("prog-txt").textContent=n+" of 38 items";' +
+        'document.getElementById("prog-bar").style.width=Math.round(n/38*100)+"%"' +
+      '}' +
+      'function resetAll(){' +
+        'document.querySelectorAll(".cl-item input").forEach(function(c){c.checked=false});' +
+        'updateProgress()' +
+      '}' +
+    '<\/scr' + 'ipt>' +
+    printScript +
+  '</head><body>' +
+    '<div class="top-bar"><div class="wrap">Official government website</div></div>' +
+    '<div class="header"><div class="wrap">Government of Barbados</div></div>' +
+    '<main><div class="wrap content">' +
+      '<h1 style="font-size:2.5rem;font-weight:700;line-height:1.15;margin-bottom:.5rem">Household preparation checklist</h1>' +
+      '<p style="color:#595959;margin-bottom:1.5rem">Tick items as you get ready. Save as PDF or print to keep a copy at home.</p>' +
+      '<div class="actions no-print">' +
+        '<button class="btn btn-primary" onclick="window.print()">Save as PDF or print</button>' +
+        '<button class="btn btn-secondary" onclick="resetAll()">Reset</button>' +
+      '</div>' +
+      '<div class="progress-box">' +
+        '<div class="progress-top"><span>Your progress</span><span id="prog-txt">0 of 38 items</span></div>' +
+        '<div class="progress-track"><div class="progress-fill" id="prog-bar"></div></div>' +
+      '</div>' +
+      items +
+    '</div></main>' +
+  '</body></html>';
+
+  var blob = new Blob([html], { type: 'text/html' });
+  window.open(URL.createObjectURL(blob), '_blank');
+}
+</script>
 </body>
 </html>
