@@ -60,9 +60,8 @@
       .page-h1 { font-size: 2rem; line-height: 1.2; }
       .page-h2 { font-size: 1.5rem; line-height: 1.25; }
 
-      /* Contact grid: 2 cols on mobile (phone numbers stay readable) */
-      .grid-4 { grid-template-columns: 1fr 1fr; }
-      .contact-number { font-size: var(--font-size-body) !important; }
+      /* Contact grid: single column on mobile (original behaviour) */
+      .grid-4 { grid-template-columns: 1fr; }
 
       /* Summary tiles: single column on small screens */
       .grid-summary { grid-template-columns: 1fr; }
@@ -288,7 +287,7 @@ function openChecklist(autoPrint) {
     '<style>' +
       '*{box-sizing:border-box;margin:0;padding:0}' +
       'body{font-family:Figtree,sans-serif;font-size:1.125rem;line-height:1.5;color:#000;background:#fff;-webkit-font-smoothing:antialiased}' +
-      '.wrap{max-width:800px;margin:0 auto;padding:0 1rem}' +
+      '.wrap{max-width:800px;margin:0 auto;padding:0 1.5rem}' +
       '.top-bar{background:#00267f;color:#fff;padding:8px 0;font-size:.875rem}' +
       '.header{background:#ffc726;padding:12px 0;font-size:1.125rem;font-weight:700}' +
       '.content{padding:2.5rem 0 4rem}' +
