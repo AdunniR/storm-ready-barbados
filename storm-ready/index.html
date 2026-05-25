@@ -9,44 +9,6 @@
     body { display: flex; flex-direction: column; min-height: 100vh; }
     main { flex: 1; }
 
-    /* DEM status banner */
-
-    /* Service cards */
-    .service-card {
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-xs);
-      padding: var(--spacing-xm);
-      border: 2px solid var(--color-grey-00);
-      border-radius: var(--radius-sm);
-      text-decoration: none;
-      color: inherit;
-      transition: border-color 0.15s, box-shadow 0.15s;
-    }
-    .service-card:hover {
-      border-color: var(--color-teal-00);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      text-decoration: none;
-    }
-    .service-card__heading {
-      font-size: var(--font-size-h3);
-      font-weight: var(--font-weight-bold);
-      color: var(--color-teal-00);
-      line-height: var(--line-height-h3);
-    }
-    .service-card__desc {
-      font-size: var(--font-size-body);
-      color: var(--color-mid-grey-00);
-      line-height: var(--line-height-body);
-    }
-    .service-card__arrow {
-      font-size: var(--font-size-body);
-      color: var(--color-teal-00);
-      font-weight: var(--font-weight-bold);
-      margin-top: auto;
-      padding-top: var(--spacing-xs);
-    }
-
     /* Contact cards */
     .contact-card {
       display: flex;
@@ -65,20 +27,58 @@
     /* Layout helpers */
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-s); }
     .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--spacing-s); }
-    @media (max-width: 640px) {
-      .grid-2 { grid-template-columns: 1fr; }
-      .grid-4 { grid-template-columns: 1fr; }
-    }
-    @media (min-width: 641px) and (max-width: 900px) {
-      .grid-4 { grid-template-columns: 1fr 1fr; }
-    }
+    /* Summary tiles: 2-col on tablet+, 1-col on small mobile */
+    .grid-summary { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-s); margin-top: var(--spacing-m); }
 
+    /* Page structure */
     .page-content { max-width: 900px; margin: 0 auto; padding: var(--spacing-l) 0; }
-    @media (max-width: 768px) {
-      .page-content { padding-left: 1rem; padding-right: 1rem; }
-    }
     .section { margin-top: var(--spacing-l); padding-top: var(--spacing-l); border-top: 2px solid var(--color-grey-00); }
     .section:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+
+    /* Responsive typography */
+    .page-h1 {
+      font-size: var(--font-size-h1);
+      font-weight: var(--font-weight-bold);
+      line-height: var(--line-height-h1);
+      margin-bottom: var(--spacing-s);
+    }
+    .page-h2 {
+      font-size: var(--font-size-h2);
+      font-weight: var(--font-weight-bold);
+      line-height: var(--line-height-h2);
+      margin-bottom: var(--spacing-s);
+    }
+
+    /* Button row */
+    .btn-row { display: flex; flex-wrap: wrap; gap: var(--spacing-s); align-items: center; }
+
+    /* ── Mobile (≤ 640px) ── */
+    @media (max-width: 640px) {
+      .page-content { padding-left: 1rem; padding-right: 1rem; }
+      .section { margin-top: 2rem; padding-top: 2rem; }
+
+      .page-h1 { font-size: 2rem; line-height: 1.2; }
+      .page-h2 { font-size: 1.5rem; line-height: 1.25; }
+
+      /* Contact grid: 2 cols on mobile (phone numbers stay readable) */
+      .grid-4 { grid-template-columns: 1fr 1fr; }
+      .contact-number { font-size: var(--font-size-body) !important; }
+
+      /* Summary tiles: single column on small screens */
+      .grid-summary { grid-template-columns: 1fr; }
+
+      /* Buttons full-width and stacked */
+      .btn-row { flex-direction: column; align-items: stretch; }
+      .btn-row .govbb-btn,
+      .btn-row .govbb-btn--secondary { width: 100%; text-align: center; box-sizing: border-box; }
+    }
+
+    /* ── Tablet (641–900px) ── */
+    @media (min-width: 641px) and (max-width: 900px) {
+      .page-content { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .grid-4 { grid-template-columns: 1fr 1fr; }
+      .page-h1 { font-size: 2.75rem; }
+    }
 
     @media print { .no-print { display: none !important; } }
   </style>
@@ -120,9 +120,7 @@
 
       <!-- Page header -->
       <div class="section">
-        <h1 style="font-size: var(--font-size-h1); font-weight: var(--font-weight-bold); line-height: var(--line-height-h1); margin-bottom: var(--spacing-s);">
-          StormReady Barbados
-        </h1>
+        <h1 class="page-h1">StormReady Barbados</h1>
         <p style="font-size: var(--font-size-body); color: var(--color-mid-grey-00); max-width: 600px; line-height: var(--line-height-body); margin-bottom: var(--spacing-m);">
           Get ready for hurricane season and stay up to date with Department of Emergency Management (DEM) storm alerts.
         </p>
@@ -135,12 +133,12 @@
 
       <!-- Household checklist -->
       <section class="section" aria-labelledby="checklist-heading">
-        <h2 id="checklist-heading" style="font-size: var(--font-size-h2); font-weight: var(--font-weight-bold); line-height: var(--line-height-h2); margin-bottom: var(--spacing-s);">Household checklist</h2>
+        <h2 id="checklist-heading" class="page-h2">Household checklist</h2>
         <p style="font-size: var(--font-size-body); line-height: var(--line-height-body); max-width: 600px; margin-bottom: var(--spacing-m);">
           Use this checklist to make sure your household is ready. It covers water, food, documents, first aid, communication, and what to do before the storm hits.
         </p>
         <div class="no-print">
-          <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-s); align-items: center;">
+          <div class="btn-row">
             <button type="button" onclick="openChecklist(false)" class="govbb-btn">Open household checklist</button>
             <button type="button" onclick="openChecklist(true)" class="govbb-btn--secondary">Save checklist as PDF</button>
           </div>
@@ -148,7 +146,7 @@
             The checklist opens in a new tab where you can tick items off. "Save as PDF" opens it and prompts your browser to save a PDF copy.
           </p>
         </div>
-        <div style="margin-top: var(--spacing-m); display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-s);">
+        <div class="grid-summary">
           <div style="padding: var(--spacing-s); background: var(--color-teal-10); border-radius: var(--radius-sm);">
             <h3 style="font-size: var(--font-size-h4); font-weight: var(--font-weight-bold); margin-bottom: var(--spacing-xs);">Water</h3>
             <p style="font-size: var(--font-size-caption); line-height: var(--line-height-body);">Store at least 3 gallons of drinking water per person for 3 days. Fill your bath and buckets before the storm hits.</p>
@@ -170,9 +168,7 @@
 
       <!-- Key contacts -->
       <section class="section" aria-labelledby="contacts-heading">
-        <h2 id="contacts-heading" style="font-size: var(--font-size-h2); font-weight: var(--font-weight-bold); line-height: var(--line-height-h2); margin-bottom: var(--spacing-s);">
-          Key contacts during a storm
-        </h2>
+        <h2 id="contacts-heading" class="page-h2">Key contacts during a storm</h2>
         <div class="grid-4">
           <a href="tel:2464362225" class="contact-card">
             <p style="font-weight: 700; font-size: var(--font-size-caption); color: var(--color-mid-grey-00); margin:0;">DEM Emergency Line</p>
@@ -307,10 +303,17 @@ function openChecklist(autoPrint) {
       '.cl-item label{font-size:1.125rem;line-height:1.4;cursor:pointer}' +
       '.cl-item input:checked+label{text-decoration:line-through;color:#595959}' +
       '.note{font-size:.875rem;color:#595959;font-style:italic;margin:.25rem 0 1rem}' +
-      '.actions{display:flex;gap:12px;margin-bottom:2rem}' +
+      '.actions{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:2rem}' +
       '.btn{padding:10px 20px;border:none;border-radius:4px;font-size:1rem;font-family:inherit;cursor:pointer}' +
       '.btn-primary{background:#0e5f64;color:#fff}.btn-primary:hover{background:#1a777d}' +
       '.btn-secondary{background:#fff;border:2px solid #e0e4e9}.btn-secondary:hover{border-color:#0e5f64}' +
+      '@media(max-width:600px){' +
+        'h1{font-size:1.75rem!important}' +
+        '.actions{flex-direction:column}' +
+        '.actions .btn{width:100%;text-align:center}' +
+        '.cl-item label{font-size:1rem}' +
+        '.cl-section h2{font-size:1.2rem}' +
+      '}' +
       '@media print{.no-print{display:none!important}body{font-size:11pt}.progress-fill{print-color-adjust:exact;-webkit-print-color-adjust:exact}nav[aria-label="Breadcrumb"]{display:none}}' +
     '</style>' +
     /* updateProgress defined in head so it exists before any checkbox fires */
