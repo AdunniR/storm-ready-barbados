@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Household preparation checklist – StormReady Barbados</title>
+  <link rel="stylesheet" href="../../dist/styles.css">
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+    main { flex: 1; }
+
+    .page-content { max-width: 800px; margin: 0 auto; padding: var(--spacing-l) 0; }
+    @media (max-width: 768px) {
+      .page-content { padding-left: 1rem; padding-right: 1rem; }
+    }
+
+    .progress-box {
+      padding: var(--spacing-s);
+      background: var(--color-teal-10);
+      border: 1px solid var(--color-teal-40);
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--spacing-m);
+    }
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-weight: 700;
+      color: var(--color-teal-00);
+    }
+    .progress-track {
+      background: var(--color-teal-40);
+      border-radius: 999px;
+      height: 10px;
+    }
+    .progress-fill {
+      background: var(--color-teal-00);
+      height: 10px;
+      border-radius: 999px;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .cl-section { margin-bottom: var(--spacing-m); }
+    .cl-section h2 {
+      font-size: var(--font-size-h3);
+      font-weight: var(--font-weight-bold);
+      margin-bottom: var(--spacing-xs);
+      padding-bottom: var(--spacing-xs);
+      border-bottom: 2px solid var(--color-grey-00);
+    }
+    .cl-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--color-grey-00);
+    }
+    .cl-item input[type="checkbox"] {
+      margin-top: 3px;
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      cursor: pointer;
+      accent-color: var(--color-teal-00);
+    }
+    .cl-item label {
+      font-size: var(--font-size-body);
+      line-height: 1.4;
+      cursor: pointer;
+    }
+    .cl-item input:checked + label {
+      text-decoration: line-through;
+      color: var(--color-mid-grey-00);
+    }
+    .cl-note {
+      font-size: var(--font-size-caption);
+      color: var(--color-mid-grey-00);
+      font-style: italic;
+      margin: 4px 0 var(--spacing-s);
+    }
+
+    @media print {
+      .no-print { display: none !important; }
+      body { font-size: 11pt; }
+      .progress-fill { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Official banner -->
+<div class="govbb-official-banner">
+  <div class="govbb-container govbb-official-banner__inner">
+    <div class="govbb-official-banner__crest">
+      <img class="govbb-official-banner__icon" src="../../dist/assets/images/govbb-creast.svg" alt="" />
+    </div>
+    <div class="govbb-official-banner__text">
+      <span>Official government website</span>
+    </div>
+  </div>
+</div>
+
+<!-- Header -->
+<header class="govbb-header">
+  <div class="govbb-container govbb-header__inner">
+    <a href="/" aria-label="Go to alpha.gov.bb homepage">
+      <img class="govbb-header__logo" src="../../dist/assets/images/govbb-logo.svg" alt="Government of Barbados" />
+    </a>
+  </div>
+</header>
+
+<!-- Alpha banner -->
+<div class="govbb-status-banner govbb-status-banner--alpha" role="status" aria-label="alpha status banner" aria-live="polite">
+  <div class="govbb-container">
+    <p>This page is in <a class="govbb-link govbb-link--secondary" href="/what-we-mean-by-alpha">Alpha</a>.</p>
+  </div>
+</div>
+
+<main>
+  <div class="govbb-container">
+    <div class="page-content">
+
+      <!-- Breadcrumb -->
+      <nav aria-label="Breadcrumb" style="margin-bottom: var(--spacing-s); font-size: var(--font-size-caption);">
+        <ol style="list-style:none; display:flex; flex-wrap:wrap; gap:4px; padding:0; margin:0;">
+          <li><a href="../" class="govbb-link">StormReady Barbados</a></li>
+          <li style="color: var(--color-mid-grey-00);" aria-hidden="true"> › </li>
+          <li style="color: var(--color-mid-grey-00);" aria-current="page">Household preparation checklist</li>
+        </ol>
+      </nav>
+
+      <h1 style="font-size: var(--font-size-h1); font-weight: var(--font-weight-bold); line-height: var(--line-height-h1); margin-bottom: var(--spacing-xs);">
+        Household preparation checklist
+      </h1>
+      <p style="font-size: var(--font-size-body); color: var(--color-mid-grey-00); margin-bottom: var(--spacing-m);">
+        Tick items as you complete them. Use the buttons below to save a PDF copy or reset your progress.
+      </p>
+
+      <div class="no-print" style="display: flex; flex-wrap: wrap; gap: var(--spacing-s); margin-bottom: var(--spacing-m);">
+        <button type="button" onclick="window.print()" class="govbb-btn">Save as PDF or print</button>
+        <button type="button" onclick="resetChecklist()" class="govbb-btn--secondary">Reset checklist</button>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="progress-box" aria-live="polite" aria-atomic="true">
+        <div class="progress-header">
+          <span>Your progress</span>
+          <span id="progress-text">0 of 38 items</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-bar"></div>
+        </div>
+      </div>
+
+      <!-- Water -->
+      <div class="cl-section">
+        <h2>Water</h2>
+        <div class="cl-item"><input type="checkbox" id="cl1" onchange="updateProgress()"><label for="cl1">At least 3 gallons of drinking water per person, for 3 days</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl2" onchange="updateProgress()"><label for="cl2">1 gallon of water per pet per day</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl3" onchange="updateProgress()"><label for="cl3">Filled bathtubs and large buckets before the storm (BWA advice)</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl4" onchange="updateProgress()"><label for="cl4">Water purification tablets or bleach (for emergencies)</label></div>
+        <p class="cl-note">After the storm: do not drink tap water until BWA says it is safe. Boil all drinking water for at least 1 minute.</p>
+      </div>
+
+      <!-- Food -->
+      <div class="cl-section">
+        <h2>Food</h2>
+        <div class="cl-item"><input type="checkbox" id="cl5" onchange="updateProgress()"><label for="cl5">At least 3 days of non-perishable food (tinned goods, dry crackers, peanut butter)</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl6" onchange="updateProgress()"><label for="cl6">Manual can opener</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl7" onchange="updateProgress()"><label for="cl7">Disposable plates, cups, and forks</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl8" onchange="updateProgress()"><label for="cl8">Baby formula and food (if you have an infant)</label></div>
+      </div>
+
+      <!-- Important documents -->
+      <div class="cl-section">
+        <h2>Important documents</h2>
+        <p class="cl-note" style="margin-top: 0;">Keep these in a waterproof bag or container.</p>
+        <div class="cl-item"><input type="checkbox" id="cl9" onchange="updateProgress()"><label for="cl9">National ID card or passport</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl10" onchange="updateProgress()"><label for="cl10">Insurance documents (home, health, vehicle)</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl11" onchange="updateProgress()"><label for="cl11">Birth certificates for everyone in your household</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl12" onchange="updateProgress()"><label for="cl12">Prescription details and medical records</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl13" onchange="updateProgress()"><label for="cl13">Cash in small bills (ATMs may not work after the storm)</label></div>
+      </div>
+
+      <!-- Health and first aid -->
+      <div class="cl-section">
+        <h2>Health and first aid</h2>
+        <div class="cl-item"><input type="checkbox" id="cl14" onchange="updateProgress()"><label for="cl14">First aid kit (plasters, bandages, antiseptic)</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl15" onchange="updateProgress()"><label for="cl15">7-day supply of prescription medicines</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl16" onchange="updateProgress()"><label for="cl16">Hearing aids with spare batteries</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl17" onchange="updateProgress()"><label for="cl17">Glasses or contact lenses with enough solution</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl18" onchange="updateProgress()"><label for="cl18">Nappies, wipes, and formula (if you have a baby)</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl19" onchange="updateProgress()"><label for="cl19">Hand sanitiser and face masks</label></div>
+      </div>
+
+      <!-- Communication -->
+      <div class="cl-section">
+        <h2>Communication</h2>
+        <div class="cl-item"><input type="checkbox" id="cl20" onchange="updateProgress()"><label for="cl20">Battery-powered or wind-up radio (to hear DEM updates)</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl21" onchange="updateProgress()"><label for="cl21">Fully charged mobile phone and portable power bank</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl22" onchange="updateProgress()"><label for="cl22">Emergency contact list written on paper (not just on your phone)</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl23" onchange="updateProgress()"><label for="cl23">Whistle to signal for help if you get trapped</label></div>
+      </div>
+
+      <!-- Shelter, tools, and safety -->
+      <div class="cl-section">
+        <h2>Shelter, tools, and safety</h2>
+        <div class="cl-item"><input type="checkbox" id="cl24" onchange="updateProgress()"><label for="cl24">Torches with spare batteries</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl25" onchange="updateProgress()"><label for="cl25">Candles and waterproof matches or a lighter</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl26" onchange="updateProgress()"><label for="cl26">Sturdy shoes or boots for every family member</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl27" onchange="updateProgress()"><label for="cl27">Rain gear (waterproof jackets or ponchos)</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl28" onchange="updateProgress()"><label for="cl28">Bedding or sleeping bag for each person</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl29" onchange="updateProgress()"><label for="cl29">Change of clothes for 3 days</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl30" onchange="updateProgress()"><label for="cl30">Tools to turn off gas and water at the mains</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl31" onchange="updateProgress()"><label for="cl31">Heavy-duty rubbish bags</label></div>
+      </div>
+
+      <!-- Before the storm hits -->
+      <div class="cl-section">
+        <h2>Before the storm hits</h2>
+        <div class="cl-item"><input type="checkbox" id="cl32" onchange="updateProgress()"><label for="cl32">Board up or shutter windows and glass doors</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl33" onchange="updateProgress()"><label for="cl33">Bring in outdoor furniture, plants, and loose items</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl34" onchange="updateProgress()"><label for="cl34">Topped up vehicle with petrol</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl35" onchange="updateProgress()"><label for="cl35">Charged all devices (phones, tablets, power banks)</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl36" onchange="updateProgress()"><label for="cl36">Let friends or family know your shelter plan</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl37" onchange="updateProgress()"><label for="cl37">Arranged help for any elderly or disabled neighbours</label></div>
+        <div class="cl-item"><input type="checkbox" id="cl38" onchange="updateProgress()"><label for="cl38">Made a plan for your pets</label></div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="govbb-footer">
+  <div class="govbb-container govbb-footer__inner">
+    <nav class="govbb-footer__nav" aria-label="Footer">
+      <a class="govbb-footer__link" href="#">Privacy</a>
+      <a class="govbb-footer__link" href="#">Accessibility</a>
+      <a class="govbb-footer__link" href="#">Contact DEM</a>
+    </nav>
+    <hr class="govbb-footer__divider" aria-hidden="true" />
+    <div class="govbb-footer__end">
+      <img class="govbb-footer__coat" src="../../dist/assets/images/govbb-creast.svg" alt="Government of Barbados Coat of Arms" />
+      <div>
+        <p class="govbb-footer__copy">StormReady Barbados is a service of the Department of Emergency Management.</p>
+        <p class="govbb-footer__copy" style="opacity:0.7; font-size: var(--font-size-caption); margin-top: 4px;">In partnership with GovTech Barbados.</p>
+        <p class="govbb-footer__copy" style="margin-top: var(--spacing-xs);">© 2026 Government of Barbados</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  var TOTAL = 38;
+
+  function updateProgress() {
+    var checked = document.querySelectorAll('.cl-item input[type="checkbox"]:checked').length;
+    document.getElementById('progress-text').textContent = checked + ' of ' + TOTAL + ' items';
+    document.getElementById('progress-bar').style.width = Math.round(checked / TOTAL * 100) + '%';
+  }
+
+  function resetChecklist() {
+    document.querySelectorAll('.cl-item input[type="checkbox"]').forEach(function(cb) {
+      cb.checked = false;
+    });
+    updateProgress();
+  }
+
+  /* Auto-trigger print when arriving via the "Save as PDF" button (?print) */
+  if (window.location.search.indexOf('print') !== -1) {
+    window.addEventListener('load', function() {
+      setTimeout(function() { window.print(); }, 400);
+    });
+  }
+</script>
+</body>
+</html>
